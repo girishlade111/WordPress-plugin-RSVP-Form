@@ -186,6 +186,34 @@ if (!defined('ABSPATH')) {
     transition: all var(--lade-transition-fast);
 }
 
+/* Settings Gear Button */
+.lade-settings-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: var(--lade-bg-primary);
+    box-shadow: 
+        3px 3px 6px var(--lade-shadow-dark),
+        -3px -3px 6px var(--lade-shadow-light);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: var(--lade-text-secondary);
+    transition: all var(--lade-transition-fast);
+    margin-right: 8px;
+}
+
+.lade-settings-btn:hover {
+    box-shadow: 
+        inset 3px 3px 6px var(--lade-shadow-dark),
+        inset -3px -3px 6px var(--lade-shadow-light);
+    color: var(--lade-primary);
+    transform: rotate(30deg);
+}
+
 .lade-control-btn:hover {
     box-shadow: 
         inset 3px 3px 6px var(--lade-shadow-dark),
@@ -825,6 +853,180 @@ if (!defined('ABSPATH')) {
     transform: translateY(-1px);
 }
 
+/* Field Toggle Modal */
+.lade-field-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000002;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--lade-transition-normal);
+}
+
+.lade-field-modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.lade-field-box {
+    padding: 30px;
+    background: var(--lade-bg-primary);
+    border-radius: var(--lade-border-radius);
+    box-shadow: 
+        24px 24px 48px var(--lade-shadow-dark),
+        -24px -24px 48px var(--lade-shadow-light);
+    max-width: 400px;
+    width: 90%;
+}
+
+.lade-field-box h4 {
+    font-size: 18px;
+    color: var(--lade-text-primary);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.lade-field-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.lade-field-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--lade-bg-primary);
+    border-radius: var(--lade-border-radius-sm);
+    box-shadow: 
+        inset 3px 3px 6px var(--lade-shadow-dark),
+        inset -3px -3px 6px var(--lade-shadow-light);
+    cursor: pointer;
+    transition: all var(--lade-transition-fast);
+}
+
+.lade-field-option:hover {
+    box-shadow: 
+        inset 5px 5px 10px var(--lade-shadow-dark),
+        inset -5px -5px 10px var(--lade-shadow-light);
+}
+
+.lade-field-option label {
+    flex: 1;
+    font-size: 14px;
+    color: var(--lade-text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.lade-field-option input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--lade-primary);
+    cursor: pointer;
+}
+
+.lade-field-option .field-icon {
+    font-size: 18px;
+}
+
+.lade-field-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.lade-field-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: var(--lade-border-radius-xs);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--lade-transition-fast);
+}
+
+.lade-field-btn.primary {
+    background: var(--lade-primary);
+    color: white;
+}
+
+.lade-field-btn.primary:hover {
+    background: var(--lade-primary-hover);
+    transform: translateY(-1px);
+}
+
+.lade-field-btn.secondary {
+    background: var(--lade-bg-primary);
+    color: var(--lade-text-secondary);
+    box-shadow: 
+        3px 3px 6px var(--lade-shadow-dark),
+        -3px -3px 6px var(--lade-shadow-light);
+}
+
+.lade-field-btn.secondary:hover {
+    box-shadow: 
+        inset 3px 3px 6px var(--lade-shadow-dark),
+        inset -3px -3px 6px var(--lade-shadow-light);
+}
+
+/* Shake Animation */
+@keyframes ladeShake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
+    20%, 40%, 60%, 80% { transform: translateX(8px); }
+}
+
+.lade-shake {
+    animation: ladeShake 0.5s ease-in-out;
+}
+
+/* Validation Error States */
+.lade-form-input.error {
+    border: 2px solid var(--lade-danger);
+    box-shadow: 
+        inset 3px 3px 6px rgba(245, 101, 101, 0.2),
+        inset -3px -3px 6px rgba(255, 255, 255, 0.1),
+        0 0 0 3px rgba(245, 101, 101, 0.1);
+}
+
+.lade-form-input.success {
+    border: 2px solid var(--lade-success);
+    box-shadow: 
+        inset 3px 3px 6px rgba(72, 187, 120, 0.2),
+        inset -3px -3px 6px rgba(255, 255, 255, 0.1);
+}
+
+.lade-form-error {
+    font-size: 12px;
+    color: var(--lade-danger);
+    margin-left: 4px;
+    display: none;
+    animation: ladeFadeIn 0.2s ease;
+}
+
+@keyframes ladeFadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.lade-form-error.visible {
+    display: block;
+}
+
 /* RSVP Table */
 .lade-rsvp-table {
     width: 100%;
@@ -1214,30 +1416,58 @@ if (!defined('ABSPATH')) {
                 showBranding: container.dataset.showBranding === 'true'
             };
         },
-        
+
         // Initialize localStorage
         initStorage: function() {
             const storageKey = 'lade_rsvp_' + this.config.eventId;
             const saved = localStorage.getItem(storageKey);
-            
+
             if (saved) {
                 try {
                     const data = JSON.parse(saved);
                     this.state = { ...this.state, ...data };
+                    
+                    // Merge settings if available
+                    if (data.settings) {
+                        this.state.settings = data.settings;
+                        // Update fields from settings if available
+                        if (data.settings.fields) {
+                            this.config.fields = data.settings.fields;
+                        }
+                        // Update capacity from settings if available
+                        if (data.settings.capacity) {
+                            this.config.maxCapacity = data.settings.capacity;
+                        }
+                    }
                 } catch (e) {
                     console.warn('Could not parse saved RSVP data:', e);
                 }
+            } else {
+                // Initialize with default settings
+                this.state.settings = {
+                    fields: this.config.fields,
+                    capacity: this.config.maxCapacity
+                };
             }
-            
+
             // Save initial state
             this.saveState();
         },
-        
+
         // Save state to localStorage
         saveState: function() {
             const storageKey = 'lade_rsvp_' + this.config.eventId;
-            localStorage.setItem(storageKey, JSON.stringify(this.state));
             
+            // Ensure settings are saved
+            if (!this.state.settings) {
+                this.state.settings = {
+                    fields: this.config.fields,
+                    capacity: this.config.maxCapacity
+                };
+            }
+            
+            localStorage.setItem(storageKey, JSON.stringify(this.state));
+
             // Update counter display
             this.updateCounter();
         },
@@ -1315,6 +1545,7 @@ if (!defined('ABSPATH')) {
                         <span class="lade-widget-title">${this.escapeHtml(this.config.eventName)}</span>
                     </div>
                     <div class="lade-widget-controls">
+                        <button class="lade-settings-btn" id="ladeSettingsBtn_${this.config.eventId}" title="Toggle Fields">⚙️</button>
                         <button class="lade-control-btn minimize" title="Minimize">−</button>
                         <button class="lade-control-btn close" title="Close">×</button>
                     </div>
@@ -1665,15 +1896,61 @@ if (!defined('ABSPATH')) {
                 <div class="lade-password-modal" id="ladePasswordModal_${this.config.eventId}">
                     <div class="lade-password-box">
                         <h4>🔐 Admin Access</h4>
-                        <input 
-                            type="password" 
-                            class="lade-password-input" 
+                        <input
+                            type="password"
+                            class="lade-password-input"
                             id="ladePasswordInput_${this.config.eventId}"
                             placeholder="Enter admin password"
                         >
                         <button class="lade-password-btn" id="ladePasswordSubmit_${this.config.eventId}">
                             Access Dashboard
                         </button>
+                    </div>
+                </div>
+                <div class="lade-field-modal" id="ladeFieldModal_${this.config.eventId}">
+                    <div class="lade-field-box">
+                        <h4>🔧 Toggle Form Fields</h4>
+                        <div class="lade-field-options" id="ladeFieldOptions_${this.config.eventId}">
+                            <div class="lade-field-option" data-field="name">
+                                <label>
+                                    <span class="field-icon">👤</span>
+                                    Full Name
+                                </label>
+                                <input type="checkbox" checked disabled>
+                            </div>
+                            <div class="lade-field-option" data-field="email">
+                                <label>
+                                    <span class="field-icon">📧</span>
+                                    Email Address
+                                </label>
+                                <input type="checkbox" checked disabled>
+                            </div>
+                            <div class="lade-field-option" data-field="phone">
+                                <label>
+                                    <span class="field-icon">📱</span>
+                                    Phone Number
+                                </label>
+                                <input type="checkbox" id="ladeTogglePhone_${this.config.eventId}">
+                            </div>
+                            <div class="lade-field-option" data-field="guests">
+                                <label>
+                                    <span class="field-icon">👥</span>
+                                    Number of Guests
+                                </label>
+                                <input type="checkbox" id="ladeToggleGuests_${this.config.eventId}">
+                            </div>
+                            <div class="lade-field-option" data-field="dietary">
+                                <label>
+                                    <span class="field-icon">🍽️</span>
+                                    Dietary Preferences
+                                </label>
+                                <input type="checkbox" id="ladeToggleDietary_${this.config.eventId}">
+                            </div>
+                        </div>
+                        <div class="lade-field-actions">
+                            <button class="lade-field-btn secondary" id="ladeFieldCancel_${this.config.eventId}">Cancel</button>
+                            <button class="lade-field-btn primary" id="ladeFieldSave_${this.config.eventId}">Save Changes</button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -1800,30 +2077,112 @@ if (!defined('ABSPATH')) {
         // ============================================
         // CONTROLS (Minimize, Close)
         // ============================================
-        
+
         initControls: function() {
             const widget = this.elements.widget;
             const minimizeBtn = widget.querySelector('.minimize');
             const closeBtn = widget.querySelector('.close');
-            
+            const settingsBtn = document.getElementById('ladeSettingsBtn_' + this.config.eventId);
+
             if (minimizeBtn) {
                 minimizeBtn.addEventListener('click', () => {
                     widget.classList.toggle('minimized');
                     const isMinimized = widget.classList.contains('minimized');
                     minimizeBtn.textContent = isMinimized ? '+' : '−';
-                    
+
                     const state = this.getSavedWidgetState();
                     state.minimized = isMinimized;
                     localStorage.setItem('lade_rsvp_widget_state', JSON.stringify(state));
                 });
             }
-            
+
             if (closeBtn) {
                 closeBtn.addEventListener('click', () => {
                     widget.classList.add('hidden');
                     this.showToast('Widget hidden. Refresh page to show again.', 'info');
                 });
             }
+
+            // Field toggle modal
+            if (settingsBtn) {
+                settingsBtn.addEventListener('click', () => {
+                    this.openFieldModal();
+                });
+            }
+
+            // Field modal save/cancel
+            const fieldModal = document.getElementById('ladeFieldModal_' + this.config.eventId);
+            if (fieldModal) {
+                const saveBtn = document.getElementById('ladeFieldSave_' + this.config.eventId);
+                const cancelBtn = document.getElementById('ladeFieldCancel_' + this.config.eventId);
+
+                if (saveBtn) {
+                    saveBtn.addEventListener('click', () => {
+                        this.saveFieldSettings();
+                    });
+                }
+
+                if (cancelBtn) {
+                    cancelBtn.addEventListener('click', () => {
+                        fieldModal.classList.remove('active');
+                    });
+                }
+
+                // Close on outside click
+                fieldModal.addEventListener('click', (e) => {
+                    if (e.target === fieldModal) {
+                        fieldModal.classList.remove('active');
+                    }
+                });
+            }
+        },
+
+        // Open field toggle modal
+        openFieldModal: function() {
+            const modal = document.getElementById('ladeFieldModal_' + this.config.eventId);
+            if (!modal) return;
+
+            // Set checkbox states based on current config
+            const togglePhone = document.getElementById('ladeTogglePhone_' + this.config.eventId);
+            const toggleGuests = document.getElementById('ladeToggleGuests_' + this.config.eventId);
+            const toggleDietary = document.getElementById('ladeToggleDietary_' + this.config.eventId);
+
+            if (togglePhone) togglePhone.checked = this.config.fields.includes('phone');
+            if (toggleGuests) toggleGuests.checked = this.config.fields.includes('guests');
+            if (toggleDietary) toggleDietary.checked = this.config.fields.includes('dietary');
+
+            modal.classList.add('active');
+        },
+
+        // Save field settings
+        saveFieldSettings: function() {
+            const togglePhone = document.getElementById('ladeTogglePhone_' + this.config.eventId);
+            const toggleGuests = document.getElementById('ladeToggleGuests_' + this.config.eventId);
+            const toggleDietary = document.getElementById('ladeToggleDietary_' + this.config.eventId);
+
+            // Build new fields array (name and email are always required)
+            const newFields = ['name', 'email'];
+            if (togglePhone && togglePhone.checked) newFields.push('phone');
+            if (toggleGuests && toggleGuests.checked) newFields.push('guests');
+            if (toggleDietary && toggleDietary.checked) newFields.push('dietary');
+
+            // Update config
+            this.config.fields = newFields;
+
+            // Save to localStorage
+            const state = this.getSavedWidgetState();
+            state.settings = state.settings || {};
+            state.settings.fields = newFields;
+            localStorage.setItem('lade_rsvp_widget_state', JSON.stringify(state));
+
+            // Close modal and rebuild form
+            document.getElementById('ladeFieldModal_' + this.config.eventId).classList.remove('active');
+            this.showToast('Fields updated! Rebuilding form...', 'success');
+
+            // Rebuild widget after short delay
+            setTimeout(() => {
+                this.init();
+            }, 1000);
         },
         
         // ============================================
@@ -1867,12 +2226,12 @@ if (!defined('ABSPATH')) {
                 this.handleWaitlistSubmit();
             });
         },
-        
+
         validateField: function(input) {
             const value = input.value.trim();
             const errorEl = document.getElementById(input.id.replace('lade', 'ladeError').replace(this.config.eventId, this.config.eventId));
             let isValid = true;
-            
+
             if (input.required && !value) {
                 isValid = false;
             } else if (input.type === 'email') {
@@ -1880,37 +2239,69 @@ if (!defined('ABSPATH')) {
             } else if (input.type === 'tel') {
                 isValid = /^[\d\s\-\+\(\)]{10,}$/.test(value);
             }
-            
+
             if (errorEl) {
                 errorEl.classList.toggle('visible', !isValid);
             }
-            input.classList.toggle('error', !isValid);
             
+            // Remove success class first
+            input.classList.remove('success');
+            
+            // Add error or success class based on validation
+            if (!isValid) {
+                input.classList.add('error');
+            } else if (value.length > 0) {
+                input.classList.add('success');
+                input.classList.remove('error');
+            }
+
             return isValid;
         },
-        
+
         checkFormValidity: function() {
             const form = this.elements.form;
             const submitBtn = document.getElementById('ladeSubmitBtn_' + this.config.eventId);
             const inputs = form.querySelectorAll('.lade-form-input[required], .lade-form-select[required]');
-            
+
             let allValid = true;
             inputs.forEach(input => {
                 if (!this.validateField(input)) {
                     allValid = false;
                 }
             });
-            
+
             if (submitBtn) {
                 submitBtn.disabled = !allValid;
             }
         },
-        
+
         handleFormSubmit: function() {
             const submitBtn = document.getElementById('ladeSubmitBtn_' + this.config.eventId);
+            const widget = this.elements.widget;
+            
+            // Validate all fields first
+            const form = this.elements.form;
+            const inputs = form.querySelectorAll('.lade-form-input[required], .lade-form-select[required]');
+            let hasErrors = false;
+            
+            inputs.forEach(input => {
+                if (!this.validateField(input)) {
+                    hasErrors = true;
+                }
+            });
+
+            // Shake animation if errors
+            if (hasErrors) {
+                widget.classList.add('lade-shake');
+                setTimeout(() => {
+                    widget.classList.remove('lade-shake');
+                }, 500);
+                return;
+            }
+
             submitBtn.classList.add('loading');
             submitBtn.textContent = 'Processing...';
-            
+
             // Gather form data
             const formData = {
                 id: 'rsvp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
@@ -1922,7 +2313,7 @@ if (!defined('ABSPATH')) {
                 status: this.config.approvalMode ? 'pending' : 'approved',
                 timestamp: new Date().toISOString()
             };
-            
+
             // Gather dietary preferences
             if (this.config.fields.includes('dietary')) {
                 const dietaryOptions = ['Vegan', 'Vegetarian', 'Gluten-Free', 'Nut Allergy', 'None'];
@@ -1933,7 +2324,7 @@ if (!defined('ABSPATH')) {
                     }
                 });
             }
-            
+
             // Generate QR code data
             formData.qrData = JSON.stringify({
                 id: formData.id,
@@ -1942,7 +2333,10 @@ if (!defined('ABSPATH')) {
                 date: this.config.eventDate,
                 status: formData.status
             });
-            
+
+            // Log submitted data to console
+            console.log('🎉 RSVP Submitted:', formData);
+
             // Simulate processing delay
             setTimeout(() => {
                 // Add to state
