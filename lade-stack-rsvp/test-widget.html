@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lade Stack RSVP Widget - Test Page</title>
+    
+    <!-- CDN Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/interactjs@1.10.23/dist/interact.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    
+    <style>
+        /* Test Page Styles */
+        :root {
+            --bg-primary: #e0e5ec;
+            --shadow-light: #ffffff;
+            --shadow-dark: #a3b1c6;
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+        
+        .page-header {
+            text-align: center;
+            padding: 60px 20px 40px;
+        }
+        
+        .page-header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+        
+        .test-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .test-card {
+            padding: 30px;
+            background: var(--bg-primary);
+            border-radius: 20px;
+            box-shadow: 
+                8px 8px 16px var(--shadow-dark),
+                -8px -8px 16px var(--shadow-light);
+        }
+        
+        .test-card h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+        
+        .test-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .shortcode-demo {
+            background: #1a202c;
+            color: #48bb78;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin-bottom: 15px;
+        }
+        
+        .feature-list {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+        
+        .feature-list li {
+            padding: 8px 0;
+            font-size: 14px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .feature-list li::before {
+            content: '✓';
+            color: #48bb78;
+            font-weight: bold;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: transform 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .instructions {
+            margin-top: 60px;
+            padding: 40px;
+            background: var(--bg-primary);
+            border-radius: 20px;
+            box-shadow: 
+                8px 8px 16px var(--shadow-dark),
+                -8px -8px 16px var(--shadow-light);
+        }
+        
+        .instructions h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .instructions ol {
+            margin-left: 20px;
+            color: var(--text-secondary);
+        }
+        
+        .instructions li {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .instructions code {
+            background: #1a202c;
+            color: #48bb78;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+        
+        .admin-password-hint {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            border-radius: 5px;
+            font-size: 14px;
+            color: #856404;
+        }
+        
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 24px;
+            }
+            
+            .test-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="page-header">
+        <h1>🎉 Lade Stack RSVP Widget</h1>
+        <p>Free AI-Powered Client-Side RSVP Form for WordPress</p>
+    </div>
+    
+    <div class="test-section">
+        
+        <!-- Test Widget Container -->
+        <div id="lade-rsvp-widget-container" 
+             data-event-id="solapur-tech-meetup"
+             data-event-name="Solapur Tech Meetup 2026"
+             data-event-date="2026-04-15"
+             data-event-time="7:00 PM"
+             data-event-location="Dhondewadi Hall, Solapur"
+             data-event-description="Join us for an evening of tech talks and networking"
+             data-max-capacity="50"
+             data-waitlist-enabled="true"
+             data-fields="name,email,phone,guests,dietary"
+             data-deadline="2026-04-10"
+             data-approval-mode="false"
+             data-admin-password="admin"
+             data-emailjs-service=""
+             data-emailjs-template=""
+             data-emailjs-key=""
+             data-theme="light"
+             data-position="bottom-right"
+             data-show-branding="true">
+        </div>
+        
+        <div class="test-grid">
+            <!-- Basic Usage -->
+            <div class="test-card">
+                <h3>📋 Basic Usage</h3>
+                <p>Simple RSVP widget with default settings. Drag the widget around the page to test draggable functionality.</p>
+                <div class="shortcode-demo">
+                    [lade_rsvp_widget]<br><br>
+                    <!-- Or with basic options -->
+                    [lade_rsvp_widget max-capacity="25"]
+                </div>
+                <ul class="feature-list">
+                    <li>Draggable widget</li>
+                    <li>Resizable from corner</li>
+                    <li>Live capacity counter</li>
+                    <li>Name & Email fields</li>
+                </ul>
+            </div>
+            
+            <!-- Custom Fields -->
+            <div class="test-card">
+                <h3>🎯 Custom Fields</h3>
+                <p>Choose which fields to display. Available: name, email, phone, guests, dietary</p>
+                <div class="shortcode-demo">
+[lade_rsvp_widget 
+    event-name="Product Launch"
+    fields="name,email,guests"]
+                </div>
+                <ul class="feature-list">
+                    <li>Toggle any field</li>
+                    <li>Required validation</li>
+                    <li>Dietary checkboxes</li>
+                    <li>Guest dropdown (1-10)</li>
+                </ul>
+            </div>
+            
+            <!-- Approval Mode -->
+            <div class="test-card">
+                <h3>🔐 Approval Mode</h3>
+                <p>Require admin approval before confirming RSVPs. Access dashboard with password.</p>
+                <div class="shortcode-demo">
+[lade_rsvp_widget 
+    approval-mode="true"
+    admin-password="ladestack123"]
+                </div>
+                <ul class="feature-list">
+                    <li>Pending/Approved status</li>
+                    <li>Admin dashboard</li>
+                    <li>Bulk approve</li>
+                    <li>QR code generation</li>
+                </ul>
+            </div>
+            
+            <!-- Deadline -->
+            <div class="test-card">
+                <h3>⏰ RSVP Deadline</h3>
+                <p>Automatically close RSVPs after a specific date with countdown timer.</p>
+                <div class="shortcode-demo">
+[lade_rsvp_widget 
+    deadline="2026-04-01"
+    event-date="2026-04-15"]
+                </div>
+                <ul class="feature-list">
+                    <li>Live countdown</li>
+                    <li>Auto-close form</li>
+                    <li>Expired message</li>
+                    <li>Timezone aware</li>
+                </ul>
+            </div>
+            
+            <!-- EmailJS Integration -->
+            <div class="test-card">
+                <h3>📧 Email Confirmation</h3>
+                <p>Send automatic confirmation emails using EmailJS (free tier available).</p>
+                <div class="shortcode-demo">
+[lade_rsvp_widget 
+    emailjs-service="service_xxx"
+    emailjs-template="template_xxx"
+    emailjs-key="user_xxx"]
+                </div>
+                <ul class="feature-list">
+                    <li>Free EmailJS tier</li>
+                    <li>Custom templates</li>
+                    <li>Event details included</li>
+                    <li>1-minute setup</li>
+                </ul>
+            </div>
+            
+            <!-- Waitlist Mode -->
+            <div class="test-card">
+                <h3>⏳ Waitlist Mode</h3>
+                <p>Automatically show waitlist form when event reaches capacity.</p>
+                <div class="shortcode-demo">
+[lade_rsvp_widget 
+    max-capacity="10"
+    waitlist-enabled="true"]
+                </div>
+                <ul class="feature-list">
+                    <li>Auto-enable at capacity</li>
+                    <li>Separate waitlist</li>
+                    <li>Waitlist counter</li>
+                    <li>Notify on openings</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Setup Instructions -->
+        <div class="instructions">
+            <h2>🚀 Setup Instructions</h2>
+            
+            <h3 style="margin-top: 30px; margin-bottom: 15px;">Step 1: Install Plugin</h3>
+            <ol>
+                <li>Upload the <code>lade-stack-rsvp</code> folder to <code>/wp-content/plugins/</code></li>
+                <li>Activate "Lade Stack RSVP Widget" in WordPress admin</li>
+                <li>Add shortcode to any page or post</li>
+            </ol>
+            
+            <h3 style="margin-top: 30px; margin-bottom: 15px;">Step 2: Configure EmailJS (Optional)</h3>
+            <ol>
+                <li>Sign up at <a href="https://www.emailjs.com/" target="_blank">EmailJS.com</a> (free)</li>
+                <li>Add an Email Service (Gmail, Outlook, etc.)</li>
+                <li>Create an Email Template with these variables:
+                    <div class="shortcode-demo" style="margin-top: 10px;">
+{{name}}<br>
+{{email}}<br>
+{{event_name}}<br>
+{{event_date}}<br>
+{{event_time}}<br>
+{{event_location}}<br>
+{{guests}}<br>
+{{dietary}}
+                    </div>
+                </li>
+                <li>Copy Service ID, Template ID, and Public Key to shortcode</li>
+            </ol>
+            
+            <h3 style="margin-top: 30px; margin-bottom: 15px;">Step 3: Test the Widget</h3>
+            <ol>
+                <li><strong>Drag:</strong> Grab the header (⋮⋮ icon) to move the widget</li>
+                <li><strong>Resize:</strong> Drag the bottom-right corner</li>
+                <li><strong>Fill Form:</strong> Enter name, email, and other details</li>
+                <li><strong>Submit:</strong> Click "Reserve My Spot" to see confirmation</li>
+                <li><strong>QR Code:</strong> Download your unique QR code</li>
+                <li><strong>Admin Dashboard:</strong> Click ⚙️ button (password: <code>admin</code>)</li>
+                <li><strong>Export CSV:</strong> Download all RSVPs from dashboard</li>
+            </ol>
+            
+            <div class="admin-password-hint">
+                <strong>💡 Admin Password Hint:</strong> The default password is <code>admin</code>. 
+                Change it in the shortcode: <code>admin-password="yourpassword"</code>
+            </div>
+        </div>
+        
+        <!-- LocalStorage Viewer -->
+        <div class="instructions" style="margin-top: 40px;">
+            <h2>📊 LocalStorage Data Viewer</h2>
+            <p style="margin-bottom: 20px;">View and manage stored RSVP data directly from your browser.</p>
+            
+            <button class="btn" onclick="viewLocalStorage()">View Stored Data</button>
+            <button class="btn" onclick="clearAllData()" style="margin-left: 10px; background: linear-gradient(135deg, #f56565 0%, #c53030 100%);">Clear All Data</button>
+            
+            <pre id="storage-viewer" style="margin-top: 20px; background: #1a202c; color: #48bb78; padding: 20px; border-radius: 10px; overflow-x: auto; display: none;"></pre>
+        </div>
+        
+    </div>
+    
+    <!-- Include Widget -->
+    <script src="includes/widget.php"></script>
+    
+    <script>
+        // LocalStorage Viewer Functions
+        function viewLocalStorage() {
+            const viewer = document.getElementById('storage-viewer');
+            const data = {};
+            
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.indexOf('lade_rsvp_') === 0) {
+                    try {
+                        data[key] = JSON.parse(localStorage.getItem(key));
+                    } catch (e) {
+                        data[key] = localStorage.getItem(key);
+                    }
+                }
+            }
+            
+            viewer.textContent = JSON.stringify(data, null, 2);
+            viewer.style.display = 'block';
+        }
+        
+        function clearAllData() {
+            if (confirm('Are you sure? This will delete all RSVP data.')) {
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.indexOf('lade_rsvp_') === 0) {
+                        localStorage.removeItem(key);
+                    }
+                }
+                alert('All data cleared! Refresh the page.');
+                location.reload();
+            }
+        }
+    </script>
+    
+</body>
+</html>
