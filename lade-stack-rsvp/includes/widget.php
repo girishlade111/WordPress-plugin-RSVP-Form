@@ -1674,6 +1674,18 @@ if (!defined('ABSPATH')) {
             settings: {}
         },
         elements: {},
+        debounceTimers: {}, // For debouncing operations
+
+        // Utility: Debounce function to limit rapid execution
+        debounce: function(func, wait, id) {
+            const context = this;
+            return function(...args) {
+                clearTimeout(context.debounceTimers[id]);
+                context.debounceTimers[id] = setTimeout(() => {
+                    func.apply(context, args);
+                }, wait);
+            };
+        },
 
         // Initialize widget with error boundary
         init: function() {
@@ -2041,8 +2053,18 @@ if (!defined('ABSPATH')) {
                 }
             }
 
-            // Update counter display
-            this.updateCounter();
+            // Update counter display (debounced)
+            if (this.updateCounter) {
+                this.updateCounter();
+            }
+        },
+
+        // Debounced version of saveState for frequent updates
+        saveStateDebounced: function() {
+            if (!this._saveStateDebounced) {
+                this._saveStateDebounced = this.debounce(this.saveState, 500, 'saveState');
+            }
+            this._saveStateDebounced();
         },
 
         // Clear oldest storage entry to make room
@@ -3546,11 +3568,16 @@ if (!defined('ABSPATH')) {
             const tbody = document.getElementById('ladeRSVPTableBody_' + this.config.eventId);
             if (!tbody) return;
 
-            // Update stats
-            document.getElementById('ladeStatTotal_' + this.config.eventId).textContent = this.state.rsvps.length;
-            document.getElementById('ladeStatApproved_' + this.config.eventId).textContent = this.state.approved.length;
-            document.getElementById('ladeStatPending_' + this.config.eventId).textContent = this.state.rsvps.filter(r => r.status === 'pending').length;
-            document.getElementById('ladeStatWaitlist_' + this.config.eventId).textContent = this.state.waitlist.length;
+            // Update stats with null checks
+            const statTotal = document.getElementById('ladeStatTotal_' + this.config.eventId);
+            const statApproved = document.getElementById('ladeStatApproved_' + this.config.eventId);
+            const statPending = document.getElementById('ladeStatPending_' + this.config.eventId);
+            const statWaitlist = document.getElementById('ladeStatWaitlist_' + this.config.eventId);
+            
+            if (statTotal) statTotal.textContent = this.state.rsvps.length;
+            if (statApproved) statApproved.textContent = this.state.approved.length;
+            if (statPending) statPending.textContent = this.state.rsvps.filter(r => r.status === 'pending').length;
+            if (statWaitlist) statWaitlist.textContent = this.state.waitlist.length;
 
             // Get search and filter values
             const searchInput = document.getElementById('ladeSearchInput_' + this.config.eventId);
@@ -3591,19 +3618,19 @@ if (!defined('ABSPATH')) {
                     <td><span class="lade-status-badge ${rsvp.status}">${rsvp.status}</span></td>
                     <td>
                         <div style="display: flex; gap: 6px;">
-                            <button class="lade-admin-action-btn secondary" 
-                                onclick="LadeRSVP.showQRCode('${this.escapeHtml(rsvp.id)}')" 
+                            <button class="lade-admin-action-btn secondary"
+                                onclick="LadeRSVP.showQRCode('${this.escapeHtml(rsvp.id)}')"
                                 style="padding: 4px 8px; font-size: 11px;" title="View QR Code">🎫</button>
                             ${rsvp.status === 'pending' ? `
-                            <button class="lade-admin-action-btn success" 
-                                onclick="LadeRSVP.updateStatus('${rsvp.id}', 'approved')" 
+                            <button class="lade-admin-action-btn success"
+                                onclick="LadeRSVP.updateStatus('${this.escapeHtml(rsvp.id)}', 'approved')"
                                 style="padding: 4px 8px; font-size: 11px;" title="Approve">✓</button>
-                            <button class="lade-admin-action-btn danger" 
-                                onclick="LadeRSVP.updateStatus('${rsvp.id}', 'rejected')" 
+                            <button class="lade-admin-action-btn danger"
+                                onclick="LadeRSVP.updateStatus('${this.escapeHtml(rsvp.id)}', 'rejected')"
                                 style="padding: 4px 8px; font-size: 11px;" title="Reject">×</button>
                             ` : `
-                            <button class="lade-admin-action-btn secondary" 
-                                onclick="LadeRSVP.duplicateRSVP('${rsvp.id}')" 
+                            <button class="lade-admin-action-btn secondary"
+                                onclick="LadeRSVP.duplicateRSVP('${this.escapeHtml(rsvp.id)}')"
                                 style="padding: 4px 8px; font-size: 11px;" title="Duplicate">📋</button>
                             `}
                         </div>
@@ -3611,9 +3638,11 @@ if (!defined('ABSPATH')) {
                 </tr>
             `}).join('');
 
-            // Add search and filter listeners
+            // Add search and filter listeners with debouncing
             if (searchInput) {
-                searchInput.addEventListener('input', () => this.renderAdminTable());
+                // Debounced render for search input
+                const debouncedRender = this.debounce(() => this.renderAdminTable(), 300, 'searchRender');
+                searchInput.addEventListener('input', debouncedRender);
             }
             if (statusFilter) {
                 statusFilter.addEventListener('change', () => this.renderAdminTable());
@@ -4095,13 +4124,23 @@ if (!defined('ABSPATH')) {
                 }
             }, 5000);
         },
-        
+
+        /**
+         * Escape HTML to prevent XSS attacks
+         * @param {string} text - Text to escape
+         * @returns {string} Escaped HTML string
+         */
         escapeHtml: function(text) {
+            if (text === null || text === undefined) {
+                return '';
+            }
+            // Convert to string first
+            const str = String(text);
             const div = document.createElement('div');
-            div.textContent = text;
+            div.textContent = str;
             return div.innerHTML;
         },
-        
+
         initTabSync: function() {
             window.addEventListener('storage', (event) => {
                 if (event.key === 'lade_rsvp_' + this.config.eventId) {
