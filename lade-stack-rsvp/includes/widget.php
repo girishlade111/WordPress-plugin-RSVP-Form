@@ -14,52 +14,64 @@ if (!defined('ABSPATH')) {
 /* ============================================
    LADE STACK RSVP WIDGET - COMPLETE CSS
    Neumorphic Design System
-   Production Ready v1.0.0
+   Production Ready v1.0.0 + Pro Features
    ============================================ */
 
+/* ============================================
+   CUSTOM CSS VARIABLES - THEME CUSTOMIZATION
+   Override these via data attributes or custom CSS
+   ============================================ */
 :root {
-    /* Light Theme Colors */
-    --lade-bg-primary: #e0e5ec;
-    --lade-bg-secondary: #e8eef5;
-    --lade-shadow-light: #ffffff;
-    --lade-shadow-dark: #a3b1c6;
-    --lade-shadow-dark-strong: #8a9ab0;
+    /* Primary Brand Colors - Customize for your brand */
+    --lade-primary: var(--lade-custom-primary, #667eea);
+    --lade-primary-hover: var(--lade-custom-primary-hover, #5a6fd6);
+    --lade-primary-light: var(--lade-custom-primary-light, #7c8ef0);
+
+    /* Background Colors */
+    --lade-bg-primary: var(--lade-custom-bg-primary, #e0e5ec);
+    --lade-bg-secondary: var(--lade-custom-bg-secondary, #e8eef5);
+
+    /* Shadow Colors */
+    --lade-shadow-light: var(--lade-custom-shadow-light, #ffffff);
+    --lade-shadow-dark: var(--lade-custom-shadow-dark, #a3b1c6);
+    --lade-shadow-dark-strong: var(--lade-custom-shadow-dark-strong, #8a9ab0);
 
     /* Accent Colors */
-    --lade-primary: #667eea;
-    --lade-primary-hover: #5a6fd6;
-    --lade-primary-light: #7c8ef0;
-    --lade-success: #48bb78;
-    --lade-success-hover: #38a169;
-    --lade-warning: #ed8936;
-    --lade-danger: #f56565;
-    --lade-danger-hover: #e53e3e;
-    --lade-info: #4299e1;
+    --lade-success: var(--lade-custom-success, #48bb78);
+    --lade-success-hover: var(--lade-custom-success-hover, #38a169);
+    --lade-warning: var(--lade-custom-warning, #ed8936);
+    --lade-danger: var(--lade-custom-danger, #f56565);
+    --lade-danger-hover: var(--lade-custom-danger-hover, #e53e3e);
+    --lade-info: var(--lade-custom-info, #4299e1);
 
     /* Text Colors */
-    --lade-text-primary: #2d3748;
-    --lade-text-secondary: #4a5568;
-    --lade-text-muted: #718096;
-    --lade-text-light: #a0aec0;
+    --lade-text-primary: var(--lade-custom-text-primary, #2d3748);
+    --lade-text-secondary: var(--lade-custom-text-secondary, #4a5568);
+    --lade-text-muted: var(--lade-custom-text-muted, #718096);
+    --lade-text-light: var(--lade-custom-text-light, #a0aec0);
 
     /* Status Colors */
-    --lade-pending: #ed8936;
-    --lade-approved: #48bb78;
-    --lade-rejected: #f56565;
+    --lade-pending: var(--lade-custom-pending, #ed8936);
+    --lade-approved: var(--lade-custom-approved, #48bb78);
+    --lade-rejected: var(--lade-custom-rejected, #f56565);
 
     /* Sizing */
-    --lade-widget-width: 420px;
-    --lade-widget-height: 600px;
-    --lade-widget-min-width: 340px;
-    --lade-widget-min-height: 450px;
-    --lade-border-radius: 20px;
-    --lade-border-radius-sm: 12px;
-    --lade-border-radius-xs: 8px;
+    --lade-widget-width: var(--lade-custom-width, 420px);
+    --lade-widget-height: var(--lade-custom-height, 600px);
+    --lade-widget-min-width: var(--lade-custom-min-width, 340px);
+    --lade-widget-min-height: var(--lade-custom-min-height, 450px);
+    --lade-border-radius: var(--lade-custom-radius, 20px);
+    --lade-border-radius-sm: var(--lade-custom-radius-sm, 12px);
+    --lade-border-radius-xs: var(--lade-custom-radius-xs, 8px);
 
     /* Transitions */
-    --lade-transition-fast: 0.15s ease;
-    --lade-transition-normal: 0.3s ease;
-    --lade-transition-slow: 0.5s ease;
+    --lade-transition-fast: var(--lade-custom-transition-fast, 0.15s ease);
+    --lade-transition-normal: var(--lade-custom-transition-normal, 0.3s ease);
+    --lade-transition-slow: var(--lade-custom-transition-slow, 0.5s ease);
+
+    /* Typography */
+    --lade-font-family: var(--lade-custom-font, 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif);
+    --lade-font-size-base: var(--lade-custom-font-size, 14px);
 }
 
 /* Dark Theme - Auto-detect via prefers-color-scheme */
@@ -1651,34 +1663,194 @@ if (!defined('ABSPATH')) {
         init: function() {
             const container = document.getElementById('lade-rsvp-widget-container');
             if (!container) return;
-            
+
             // Load configuration from data attributes
             this.loadConfig(container);
-            
+
             // Initialize storage
             this.initStorage();
-            
+
             // Build widget HTML
             this.buildWidget();
-            
+
             // Initialize functionality
             this.initDraggable();
             this.initResizable();
             this.initControls();
             this.initForm();
             this.initAdminPanel();
-            
+
             // Start countdown if deadline set
             if (this.config.deadline) {
                 this.startCountdown();
             }
-            
+
             // Sync across tabs
             this.initTabSync();
-            
+
+            // Pro Features: PWA support
+            if (this.config.showBranding) {
+                this.createManifest();
+                this.registerServiceWorker();
+            }
+
             console.log('✅ Lade Stack RSVP Widget initialized for: ' + this.config.eventName);
         },
-        
+
+        // Internationalization (i18n) - English/Marathi translations
+        i18n: {
+            en: {
+                reserveSpot: 'Reserve My Spot',
+                processing: 'Processing...',
+                joinWaitlist: 'Join Waitlist',
+                eventFull: 'Event is Full',
+                rsvpClosed: 'RSVP Closed',
+                spotsRemaining: 'spots remaining',
+                eventFullMessage: 'Sorry, all spots have been reserved. Check back for future events!',
+                waitlistNotice: 'Event is Full',
+                waitlistMessage: 'Join the waitlist to be notified if spots become available.',
+                deadlineExpired: 'RSVP Closed',
+                deadlineMessage: 'The deadline for RSVPs has passed.',
+                rsvpConfirmed: 'RSVP Confirmed!',
+                thankYou: 'Thank you, {name}! Your spot has been reserved.',
+                confirmationSent: '📧 Confirmation email sent to {email}',
+                pendingApproval: '⏳ Pending approval. You\'ll be notified once approved.',
+                downloadQR: '📥 Download QR Code',
+                backToEvent: '← Back to Event',
+                fullName: 'Full Name',
+                email: 'Email Address',
+                phone: 'Phone Number',
+                guests: 'Number of Guests',
+                dietary: 'Dietary Preferences',
+                optional: 'optional',
+                selectGuests: 'Select guests',
+                vegan: '🌱 Vegan',
+                vegetarian: '🥬 Vegetarian',
+                glutenFree: '🌾 Gluten-Free',
+                nutAllergy: '🥜 Nut Allergy',
+                none: '✅ None',
+                nameError: 'Please enter your name',
+                emailError: 'Please enter a valid email',
+                phoneError: 'Please enter a valid phone number',
+                fixErrors: 'Please fix the errors in the form',
+                errorOccurred: 'An error occurred. Please try again.',
+                addedToWaitlist: '✅ Added to waitlist! We\'ll notify you if spots open up.',
+                confirmationSentToast: '✅ Confirmation sent!',
+                qrDownloaded: '✅ QR Code downloaded!',
+                rsvpDuplicated: '✅ RSVP duplicated!',
+                csvExported: '✅ {type} exported!',
+                incorrectPassword: '❌ Incorrect password',
+                widgetHidden: 'Widget hidden. Refresh page to show again.',
+                fieldsUpdated: 'Fields updated! Rebuilding form...',
+                approveAll: '✓ Approve All',
+                approveAllSuccess: '✅ All pending RSVPs approved',
+                exportRSVPs: '📥 Export RSVPs',
+                exportWaitlist: '📥 Export Waitlist',
+                clearAll: '🗑️ Clear All',
+                clearAllSuccess: '✅ All data cleared',
+                noDataExport: 'No data to export',
+                noRsvps: 'No RSVPs yet',
+                noMatchingRsvps: 'No matching RSVPs',
+                searchPlaceholder: '🔍 Search by name or email...',
+                allStatus: 'All Status',
+                approved: 'Approved',
+                pending: 'Pending',
+                rejected: 'Rejected',
+                waitlist: 'Waitlist',
+                totalRsvps: 'Total RSVPs',
+                rsvpDashboard: '📊 RSVP Dashboard',
+                viewRsvps: 'View RSVPs',
+                adminAccess: '🔐 Admin Access',
+                enterPassword: 'Enter admin password',
+                accessDashboard: 'Access Dashboard',
+                toggleFields: '🔧 Toggle Form Fields',
+                saveChanges: 'Save Changes',
+                cancel: 'Cancel',
+                rsvpClosesIn: 'RSVP closes in',
+                rsvpClosed: 'RSVP Closed',
+                days: 'Days',
+                hours: 'Hours',
+                mins: 'Mins',
+                guest: 'Guest',
+                guests: 'Guests'
+            },
+            mr: {  // Marathi translations
+                reserveSpot: 'माझी जागा राखीव करा',
+                processing: 'प्रक्रिया चालू आहे...',
+                joinWaitlist: 'वेटलिस्टमध्ये सामील व्हा',
+                eventFull: 'कार्यक्रम भरला आहे',
+                rsvpClosed: 'RSVP बंद आहे',
+                spotsRemaining: 'जागा शिल्लक',
+                eventFullMessage: 'माफ करा, सर्व जागा राखीव झाल्या आहेत. भविष्यातील कार्यक्रमांसाठी परत तपासा!',
+                waitlistNotice: 'कार्यक्रम भरला आहे',
+                waitlistMessage: 'जागा उपलब्ध झाल्यास सूचित करण्यासाठी वेटलिस्टमध्ये सामील व्हा.',
+                deadlineExpired: 'RSVP बंद आहे',
+                deadlineMessage: 'RSVP साठीची मुदत संपली आहे.',
+                rsvpConfirmed: 'RSVP पुष्टी झाली!',
+                thankYou: 'धन्यवाद, {name}! तुमची जागा राखीव झाली आहे.',
+                confirmationSent: '📧 {email} वर पुष्टीकरण ईमेल पाठवला',
+                pendingApproval: '⏳ मंजुरीची प्रतीक्षा. मंजूर झाल्यावर तुम्हाला सूचित केले जाईल.',
+                downloadQR: '📥 QR कोड डाउनलोड करा',
+                backToEvent: '← कार्यक्रमाकडे परत',
+                fullName: 'पूर्ण नाव',
+                email: 'ईमेल पत्ता',
+                phone: 'फोन नंबर',
+                guests: 'पाहुण्यांची संख्या',
+                dietary: 'आहाराची प्राधान्ये',
+                optional: 'पर्यायी',
+                selectGuests: 'पाहुणे निवडा',
+                vegan: '🌱 व्हेगन',
+                vegetarian: '🥬 शाकाहारी',
+                glutenFree: '🌾 ग्लूटेन-मुक्त',
+                nutAllergy: '🥜 शेंगदाणा ॲलर्जी',
+                none: '✅ काहीही नाही',
+                nameError: 'कृपया तुमचे नाव प्रविष्ट करा',
+                emailError: 'कृपया वैध ईमेल प्रविष्ट करा',
+                phoneError: 'कृपया वैध फोन नंबर प्रविष्ट करा',
+                fixErrors: 'कृपया फॉर्ममधील त्रुटी दुरुस्त करा',
+                errorOccurred: 'एक त्रुटी आली. कृपया पुन्हा प्रयत्न करा.',
+                addedToWaitlist: '✅ वेटलिस्टमध्ये जोडले! जागा उपलब्ध झाल्यास आम्ही तुम्हाला सूचित करू.',
+                confirmationSentToast: '✅ पुष्टीकरण पाठवले!',
+                qrDownloaded: '✅ QR कोड डाउनलोड केला!',
+                rsvpDuplicated: '✅ RSVP डुप्लिकेट केले!',
+                csvExported: '✅ {type} निर्यात केले!',
+                incorrectPassword: '❌ चुकीचा पासवर्ड',
+                widgetHidden: 'विजेट लपवले. पुन्हा दाखवण्यासाठी पेज रिफ्रेश करा.',
+                fieldsUpdated: 'फील्ड्स अपडेट केले! फॉर्म पुन्हा बनवत आहे...',
+                approveAll: '✓ सर्व मंजूर करा',
+                approveAllSuccess: '✅ सर्व प्रलंबित RSVP मंजूर केले',
+                exportRSVPs: '📥 RSVPs निर्यात करा',
+                exportWaitlist: '📥 वेटलिस्ट निर्यात करा',
+                clearAll: '🗑️ सर्व साफ करा',
+                clearAllSuccess: '✅ सर्व डेटा साफ केला',
+                noDataExport: 'निर्यात करण्यासाठी डेटा नाही',
+                noRsvps: 'अद्याप RSVP नाहीत',
+                noMatchingRsvps: 'कोणतेही जुळणारे RSVP नाहीत',
+                searchPlaceholder: '🔍 नाव किंवा ईमेलद्वारे शोधा...',
+                allStatus: 'सर्व स्थिती',
+                approved: 'मंजूर',
+                pending: 'प्रलंबित',
+                rejected: 'निराकृत',
+                waitlist: 'वेटलिस्ट',
+                totalRsvps: 'एकूण RSVP',
+                rsvpDashboard: '📊 RSVP डॅशबोर्ड',
+                viewRsvps: 'RSVP पहा',
+                adminAccess: '🔐 ॲडमिन ॲक्सेस',
+                enterPassword: 'पासवर्ड प्रविष्ट करा',
+                accessDashboard: 'डॅशबोर्ड ॲक्सेस करा',
+                toggleFields: '🔧 फील्ड्स टॉगल करा',
+                saveChanges: 'बदल सेव्ह करा',
+                cancel: 'रद्द करा',
+                rsvpClosesIn: 'RSVP बंद होईल',
+                rsvpClosed: 'RSVP बंद आहे',
+                days: 'दिवस',
+                hours: 'तास',
+                mins: 'मिनिटे',
+                guest: 'पाहुणा',
+                guests: 'पाहुणे'
+            }
+        },
+
         // Load configuration from container data attributes
         loadConfig: function(container) {
             this.config = {
@@ -1699,8 +1871,38 @@ if (!defined('ABSPATH')) {
                 emailjsKey: container.dataset.emailjsKey || '',
                 theme: container.dataset.theme || 'light',
                 position: container.dataset.position || 'bottom-right',
-                showBranding: container.dataset.showBranding === 'true'
+                showBranding: container.dataset.showBranding === 'true',
+                // Pro Features
+                language: container.dataset.language || 'en', // i18n: en/mr
+                analyticsId: container.dataset.analyticsId || '', // Google Analytics
+                customCSS: container.dataset.customCss || '' // Custom CSS vars
             };
+
+            // Apply custom CSS variables if provided
+            if (this.config.customCSS) {
+                try {
+                    const customVars = JSON.parse(this.config.customCSS);
+                    const root = document.documentElement;
+                    Object.keys(customVars).forEach(key => {
+                        root.style.setProperty('--lade-' + key, customVars[key]);
+                    });
+                } catch (e) {
+                    console.warn('Invalid custom CSS variables:', e);
+                }
+            }
+        },
+
+        // Get translation string
+        t: function(key, params = {}) {
+            const lang = this.i18n[this.config.language] || this.i18n.en;
+            let str = lang[key] || this.i18n.en[key] || key;
+            
+            // Replace placeholders
+            Object.keys(params).forEach(param => {
+                str = str.replace('{' + param + '}', params[param]);
+            });
+            
+            return str;
         },
 
         // Initialize localStorage
@@ -1830,13 +2032,21 @@ if (!defined('ABSPATH')) {
                 this.initEmailJS();
             }
         },
-        
+
         buildHeader: function() {
-            const deadlinePill = this.config.deadline ? 
+            const deadlinePill = this.config.deadline ?
                 `<span class="lade-deadline-pill" id="ladeDeadlinePill_${this.config.eventId}">
                     <span>⏰</span>
                     <span id="ladeDeadlineText_${this.config.eventId}">Loading...</span>
                 </span>` : '';
+
+            // Language toggle button (only if multiple languages configured)
+            const langToggle = this.config.language ? `
+                <button class="lade-control-btn lang-toggle" id="ladeLangToggle_${this.config.eventId}" 
+                    title="Switch Language" aria-label="Switch Language" 
+                    style="font-size: 12px; font-weight: 600; width: auto; padding: 0 8px;">
+                    ${this.config.language.toUpperCase()}
+                </button>` : '';
 
             return `
                 <div class="lade-widget-header" id="ladeHeader_${this.config.eventId}">
@@ -1848,6 +2058,7 @@ if (!defined('ABSPATH')) {
                         </span>
                     </div>
                     <div class="lade-widget-controls">
+                        ${langToggle}
                         <button class="lade-settings-btn" id="ladeSettingsBtn_${this.config.eventId}" title="Toggle Fields">⚙️</button>
                         <button class="lade-control-btn minimize" title="Minimize">−</button>
                         <button class="lade-control-btn close" title="Close">×</button>
@@ -2490,6 +2701,29 @@ if (!defined('ABSPATH')) {
             const minimizeBtn = widget.querySelector('.minimize');
             const closeBtn = widget.querySelector('.close');
             const settingsBtn = document.getElementById('ladeSettingsBtn_' + this.config.eventId);
+            const langToggleBtn = document.getElementById('ladeLangToggle_' + this.config.eventId);
+
+            // Language toggle - switch between English and Marathi
+            if (langToggleBtn) {
+                langToggleBtn.addEventListener('click', () => {
+                    // Toggle language
+                    this.config.language = this.config.language === 'en' ? 'mr' : 'en';
+                    langToggleBtn.textContent = this.config.language.toUpperCase();
+                    
+                    // Rebuild widget with new language
+                    this.showToast('Language switched to ' + (this.config.language === 'en' ? 'English' : 'Marathi'), 'info');
+                    setTimeout(() => this.init(), 1000);
+                });
+
+                langToggleBtn.setAttribute('role', 'button');
+                langToggleBtn.setAttribute('tabindex', '0');
+                langToggleBtn.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        langToggleBtn.click();
+                    }
+                });
+            }
 
             if (minimizeBtn) {
                 minimizeBtn.addEventListener('click', () => {
@@ -2838,6 +3072,14 @@ if (!defined('ABSPATH')) {
             // Log submitted data to console
             console.log('🎉 RSVP Submitted:', formData);
 
+            // Track with Google Analytics if configured
+            this.trackAnalyticsEvent('RSVP_Submit', {
+                event_name: this.config.eventName,
+                event_id: this.config.eventId,
+                guest_name: formData.name,
+                guests: formData.guests
+            });
+
             // Simulate processing delay
             setTimeout(() => {
                 // Add to state
@@ -2997,34 +3239,43 @@ if (!defined('ABSPATH')) {
         // ============================================
         // SUCCESS MESSAGE & QR CODE
         // ============================================
-        
+
         showSuccessMessage: function(rsvp) {
             const body = this.elements.body;
+            const t = this.t.bind(this);
+            
             body.innerHTML = `
                 <div class="lade-success-message">
                     <div class="lade-success-icon">
                         <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
                     </div>
-                    <h3>RSVP Confirmed!</h3>
-                    <p>Thank you, ${this.escapeHtml(rsvp.name)}! Your spot has been reserved.</p>
-                    ${this.config.approvalMode && rsvp.status === 'pending' ? 
-                        '<p style="color: var(--lade-warning);">⏳ Pending approval. You\'ll be notified once approved.</p>' : 
-                        '<p>📧 Confirmation email sent to ' + this.escapeHtml(rsvp.email) + '</p>'
+                    <h3>${t('rsvpConfirmed')}</h3>
+                    <p>${t('thankYou', { name: this.escapeHtml(rsvp.name) })}</p>
+                    ${this.config.approvalMode && rsvp.status === 'pending' ?
+                        '<p style="color: var(--lade-warning);">' + t('pendingApproval') + '</p>' :
+                        '<p>' + t('confirmationSent', { email: this.escapeHtml(rsvp.email) }) + '</p>'
                     }
                     <div class="lade-qr-container" id="ladeQRContainer_${this.config.eventId}">
                         <div id="ladeQRCode_${this.config.eventId}"></div>
                         <button class="lade-qr-download" id="ladeQRDownload_${this.config.eventId}">
-                            📥 Download QR Code
+                            ${t('downloadQR')}
                         </button>
                     </div>
                     <button class="lade-submit-btn" onclick="location.reload()" style="margin-top: 16px;">
-                        ← Back to Event
+                        ${t('backToEvent')}
                     </button>
                 </div>
             `;
-            
+
             // Generate QR code
             this.generateQRCode(rsvp);
+            
+            // Track success with Google Analytics
+            this.trackAnalyticsEvent('RSVP_Success', {
+                event_name: this.config.eventName,
+                rsvp_id: rsvp.id,
+                guest_name: rsvp.name
+            });
         },
         
         generateQRCode: function(rsvp) {
@@ -3576,6 +3827,96 @@ if (!defined('ABSPATH')) {
         // ============================================
         // UTILITIES
         // ============================================
+
+        // Google Analytics Event Tracking
+        trackAnalyticsEvent: function(eventName, eventData = {}) {
+            if (!this.config.analyticsId) return;
+
+            // Google Analytics 4
+            if (typeof gtag !== 'undefined') {
+                gtag('event', eventName, {
+                    event_category: 'RSVP Widget',
+                    event_label: this.config.eventName,
+                    value: eventData.guests || 1,
+                    ...eventData
+                });
+            }
+
+            // Google Analytics Universal (legacy)
+            if (typeof ga !== 'undefined') {
+                ga('send', 'event', 'RSVP Widget', eventName, this.config.eventName);
+            }
+
+            // Console log for debugging
+            console.log('📊 GA Event:', eventName, eventData);
+        },
+
+        // PWA: Register service worker
+        registerServiceWorker: function() {
+            if ('serviceWorker' in navigator && this.config.eventId) {
+                // Create inline service worker for PWA functionality
+                const swBlob = new Blob([`
+                    const CACHE_NAME = 'lade-rsvp-${this.config.eventId}';
+                    self.addEventListener('install', (e) => {
+                        e.waitUntil(
+                            caches.open(CACHE_NAME).then((cache) => {
+                                return cache.addAll([
+                                    '/',
+                                    '/wp-content/plugins/lade-stack-rsvp/includes/widget.php'
+                                ]);
+                            })
+                        );
+                    });
+                    self.addEventListener('fetch', (e) => {
+                        e.respondWith(
+                            caches.match(e.request).then((response) => {
+                                return response || fetch(e.request);
+                            })
+                        );
+                    });
+                `], { type: 'application/javascript' });
+
+                const swUrl = URL.createObjectURL(swBlob);
+                navigator.serviceWorker.register(swUrl)
+                    .then((registration) => {
+                        console.log('✅ ServiceWorker registered:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.warn('❌ ServiceWorker registration failed:', error);
+                    });
+            }
+        },
+
+        // PWA: Create manifest dynamically
+        createManifest: function() {
+            if (!this.config.showBranding) return;
+
+            const manifest = {
+                name: this.config.eventName + ' - RSVP Widget',
+                short_name: 'RSVP',
+                description: 'RSVP for ' + this.config.eventName,
+                start_url: '/',
+                display: 'standalone',
+                background_color: '#e0e5ec',
+                theme_color: '#667eea',
+                icons: [
+                    {
+                        src: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" rx="8" fill="%23667eea"/><path d="M12 20L18 26L28 14" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+                        sizes: '48x48',
+                        type: 'image/svg+xml'
+                    }
+                ]
+            };
+
+            const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+            const manifestUrl = URL.createObjectURL(manifestBlob);
+
+            // Add manifest link to head
+            const link = document.createElement('link');
+            link.rel = 'manifest';
+            link.href = manifestUrl;
+            document.head.appendChild(link);
+        },
 
         updateCounter: function() {
             const counter = this.elements.counter;

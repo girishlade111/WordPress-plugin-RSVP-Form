@@ -162,32 +162,37 @@ final class Lade_Stack_RSVP {
             'event-time' => '',
             'event-location' => '',
             'event-description' => '',
-            
+
             // Capacity Settings
             'max-capacity' => '50',
             'waitlist-enabled' => 'true',
-            
+
             // Field Toggles
             'fields' => 'name,email,phone,guests,dietary',
-            
+
             // Deadline
             'deadline' => '',
-            
+
             // Approval Mode
             'approval-mode' => 'false',
             'admin-password' => 'ladestack123',
-            
+
             // EmailJS Settings
             'emailjs-service' => '',
             'emailjs-template' => '',
             'emailjs-key' => '',
-            
+
             // Styling
             'theme' => 'light',
             'position' => 'bottom-right',
-            
+
             // Branding
-            'show-branding' => 'true'
+            'show-branding' => 'true',
+
+            // Pro Features (Phase 9)
+            'language' => 'en', // i18n: en/mr
+            'analytics-id' => '', // Google Analytics Tracking ID
+            'custom-css' => '' // Custom CSS variables (JSON)
         ), $atts, 'lade_rsvp_widget');
         
         // Generate unique event ID from event name
@@ -199,7 +204,7 @@ final class Lade_Stack_RSVP {
         // Build widget
         ob_start();
         ?>
-        <div id="lade-rsvp-widget-container" 
+        <div id="lade-rsvp-widget-container"
              data-event-id="<?php echo esc_attr($event_id); ?>"
              data-event-name="<?php echo esc_attr($atts['event-name']); ?>"
              data-event-date="<?php echo esc_attr($atts['event-date']); ?>"
@@ -217,7 +222,10 @@ final class Lade_Stack_RSVP {
              data-emailjs-key="<?php echo esc_attr($atts['emailjs-key']); ?>"
              data-theme="<?php echo esc_attr($atts['theme']); ?>"
              data-position="<?php echo esc_attr($atts['position']); ?>"
-             data-show-branding="<?php echo esc_attr($atts['show-branding']); ?>">
+             data-show-branding="<?php echo esc_attr($atts['show-branding']); ?>"
+             data-language="<?php echo esc_attr($atts['language']); ?>"
+             data-analytics-id="<?php echo esc_attr($atts['analytics-id']); ?>"
+             data-custom-css="<?php echo esc_attr($atts['custom-css']); ?>">
         </div>
         
         <?php
