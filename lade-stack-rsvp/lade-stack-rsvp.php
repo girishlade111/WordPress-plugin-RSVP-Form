@@ -50,15 +50,21 @@ final class Lade_Stack_RSVP {
         add_action('wp_enqueue_scripts', array($this, 'enqueue_assets'));
         add_action('admin_menu', array($this, 'add_admin_menu'));
         add_action('admin_init', array($this, 'register_settings'));
+        
+        // Gutenberg Block support
+        add_action('init', array($this, 'register_block'));
+        add_action('enqueue_block_editor_assets', array($this, 'enqueue_block_assets'));
     }
     
     /**
      * Enqueue CDN assets
      */
     public function enqueue_assets() {
-        // Only enqueue on pages with shortcode
+        // Only enqueue on pages with shortcode or block
         global $post;
-        if (is_a($post, 'WP_Post') && has_shortcode($post->post_content, 'lade_rsvp_widget')) {
+        $has_block = is_a($post, 'WP_Post') && (has_shortcode($post->post_content, 'lade_rsvp_widget') || has_block('lade-stack/rsvp-widget', $post));
+        
+        if ($has_block) {
             // Interact.js for draggable
             wp_enqueue_script('interact-js', 'https://cdn.jsdelivr.net/npm/interactjs@1.10.23/dist/interact.min.js', array(), '1.10.23', true);
 
@@ -70,10 +76,78 @@ final class Lade_Stack_RSVP {
 
             // FileSaver.js for CSV export
             wp_enqueue_script('filesaver-js', 'https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js', array(), '2.0.5', true);
-            
+
             // Canvas Confetti for celebrations
             wp_enqueue_script('canvas-confetti', 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js', array(), '1.9.2', true);
         }
+    }
+
+    /**
+     * Register Gutenberg block
+     */
+    public function register_block() {
+        wp_register_script(
+            'lade-rsvp-block-editor',
+            plugins_url('block.js', __FILE__),
+            array('wp-blocks', 'wp-element', 'wp-components', 'wp-editor', 'wp-i18n'),
+            LADE_RSVP_VERSION
+        );
+
+        register_block_type('lade-stack/rsvp-widget', array(
+            'editor_script' => 'lade-rsvp-block-editor',
+            'render_callback' => array($this, 'render_block'),
+            'attributes' => array(
+                'eventName' => array('type' => 'string', 'default' => 'Lade Stack Event'),
+                'eventDate' => array('type' => 'string'),
+                'eventTime' => array('type' => 'string'),
+                'eventLocation' => array('type' => 'string'),
+                'maxCapacity' => array('type' => 'number', 'default' => 50),
+                'fields' => array('type' => 'string', 'default' => 'name,email,phone,guests,dietary'),
+                'deadline' => array('type' => 'string'),
+                'approvalMode' => array('type' => 'boolean', 'default' => false),
+                'adminPassword' => array('type' => 'string', 'default' => 'ladestack123'),
+                'emailjsService' => array('type' => 'string'),
+                'emailjsTemplate' => array('type' => 'string'),
+                'emailjsKey' => array('type' => 'string'),
+                'theme' => array('type' => 'string', 'default' => 'light'),
+                'showBranding' => array('type' => 'boolean', 'default' => true),
+            ),
+        ));
+    }
+
+    /**
+     * Render Gutenberg block
+     */
+    public function render_block($attributes) {
+        $atts = array(
+            'event-name' => $attributes['eventName'],
+            'event-date' => $attributes['eventDate'] ?? '',
+            'event-time' => $attributes['eventTime'] ?? '',
+            'event-location' => $attributes['eventLocation'] ?? '',
+            'max-capacity' => $attributes['maxCapacity'],
+            'fields' => $attributes['fields'],
+            'deadline' => $attributes['deadline'] ?? '',
+            'approval-mode' => $attributes['approvalMode'] ? 'true' : 'false',
+            'admin-password' => $attributes['adminPassword'],
+            'emailjs-service' => $attributes['emailjsService'] ?? '',
+            'emailjs-template' => $attributes['emailjsTemplate'] ?? '',
+            'emailjs-key' => $attributes['emailjsKey'] ?? '',
+            'theme' => $attributes['theme'],
+            'show-branding' => $attributes['showBranding'] ? 'true' : 'false',
+        );
+        return $this->render_shortcode($atts);
+    }
+
+    /**
+     * Enqueue block editor assets
+     */
+    public function enqueue_block_assets() {
+        wp_enqueue_style(
+            'lade-rsvp-block-editor-styles',
+            plugins_url('block-editor.css', __FILE__),
+            array(),
+            LADE_RSVP_VERSION
+        );
     }
     
     /**
@@ -101,7 +175,7 @@ final class Lade_Stack_RSVP {
             
             // Approval Mode
             'approval-mode' => 'false',
-            'admin-password' => 'admin',
+            'admin-password' => 'ladestack123',
             
             // EmailJS Settings
             'emailjs-service' => '',

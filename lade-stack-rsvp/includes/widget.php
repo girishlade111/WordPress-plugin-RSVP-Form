@@ -14,6 +14,7 @@ if (!defined('ABSPATH')) {
 /* ============================================
    LADE STACK RSVP WIDGET - COMPLETE CSS
    Neumorphic Design System
+   Production Ready v1.0.0
    ============================================ */
 
 :root {
@@ -23,7 +24,7 @@ if (!defined('ABSPATH')) {
     --lade-shadow-light: #ffffff;
     --lade-shadow-dark: #a3b1c6;
     --lade-shadow-dark-strong: #8a9ab0;
-    
+
     /* Accent Colors */
     --lade-primary: #667eea;
     --lade-primary-hover: #5a6fd6;
@@ -34,18 +35,18 @@ if (!defined('ABSPATH')) {
     --lade-danger: #f56565;
     --lade-danger-hover: #e53e3e;
     --lade-info: #4299e1;
-    
+
     /* Text Colors */
     --lade-text-primary: #2d3748;
     --lade-text-secondary: #4a5568;
     --lade-text-muted: #718096;
     --lade-text-light: #a0aec0;
-    
+
     /* Status Colors */
     --lade-pending: #ed8936;
     --lade-approved: #48bb78;
     --lade-rejected: #f56565;
-    
+
     /* Sizing */
     --lade-widget-width: 420px;
     --lade-widget-height: 600px;
@@ -54,14 +55,29 @@ if (!defined('ABSPATH')) {
     --lade-border-radius: 20px;
     --lade-border-radius-sm: 12px;
     --lade-border-radius-xs: 8px;
-    
+
     /* Transitions */
     --lade-transition-fast: 0.15s ease;
     --lade-transition-normal: 0.3s ease;
     --lade-transition-slow: 0.5s ease;
 }
 
-/* Dark Theme */
+/* Dark Theme - Auto-detect via prefers-color-scheme */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --lade-bg-primary: #1a202c;
+        --lade-bg-secondary: #2d3748;
+        --lade-shadow-light: #2d3748;
+        --lade-shadow-dark: #0f141c;
+        --lade-shadow-dark-strong: #0a0f16;
+        --lade-text-primary: #f7fafc;
+        --lade-text-secondary: #e2e8f0;
+        --lade-text-muted: #a0aec0;
+        --lade-text-light: #718096;
+    }
+}
+
+/* Manual Dark Theme Override */
 [data-theme="dark"] {
     --lade-bg-primary: #1a202c;
     --lade-bg-secondary: #2d3748;
@@ -85,6 +101,78 @@ if (!defined('ABSPATH')) {
     font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif;
     line-height: 1.5;
     color: var(--lade-text-primary);
+}
+
+/* Screen Reader Only - Accessibility */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Focus Visible for Keyboard Navigation */
+.lade-form-input:focus-visible,
+.lade-form-select:focus-visible,
+.lade-submit-btn:focus-visible,
+.lade-control-btn:focus-visible,
+.lade-settings-btn:focus-visible,
+.lade-admin-action-btn:focus-visible {
+    outline: 3px solid var(--lade-primary);
+    outline-offset: 2px;
+}
+
+/* Loading Spinner Animation */
+@keyframes ladeSpinnerRotate {
+    to { transform: rotate(360deg); }
+}
+
+.lade-spinner {
+    display: inline-block;
+    animation: ladeSpinnerRotate 1s linear infinite;
+    transform-origin: center;
+}
+
+.lade-spinner circle {
+    animation: ladeSpinnerDash 1.5s ease-in-out infinite;
+}
+
+@keyframes ladeSpinnerDash {
+    0% { stroke-dasharray: 1, 200; stroke-dashoffset: 0; }
+    50% { stroke-dasharray: 89, 200; stroke-dashoffset: -35px; }
+    100% { stroke-dasharray: 89, 200; stroke-dashoffset: -124px; }
+}
+
+/* Loading State for Button */
+.lade-submit-btn.loading .lade-btn-text {
+    display: none;
+}
+
+.lade-submit-btn.loading .lade-btn-loading {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Skip Link for Keyboard Users */
+.lade-skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--lade-primary);
+    color: white;
+    padding: 8px 16px;
+    z-index: 100000;
+    transition: top 0.3s;
+}
+
+.lade-skip-link:focus {
+    top: 0;
 }
 
 /* Widget Container */
@@ -1336,7 +1424,7 @@ if (!defined('ABSPATH')) {
     text-decoration: underline;
 }
 
-/* Responsive Design */
+/* Responsive Design - Mobile First */
 @media (max-width: 480px) {
     .lade-widget {
         top: 10px !important;
@@ -1346,22 +1434,161 @@ if (!defined('ABSPATH')) {
         height: 80vh !important;
         max-height: 80vh;
     }
-    
+
+    .lade-widget-header {
+        padding: 12px 16px;
+    }
+
+    .lade-widget-title {
+        font-size: 14px;
+    }
+
+    .lade-widget-body {
+        padding: 16px;
+    }
+
+    /* Stack form fields vertically on mobile */
+    .lade-form-group {
+        width: 100%;
+    }
+
+    .lade-form-input,
+    .lade-form-select {
+        font-size: 16px; /* Prevent zoom on iOS */
+        padding: 12px 14px;
+    }
+
+    /* Single column dietary options */
     .lade-dietary-options {
         grid-template-columns: 1fr;
     }
-    
+
+    /* Full width admin panel */
     .lade-admin-panel {
         width: 95vw;
+        max-width: none;
     }
-    
+
+    /* Stack admin actions */
+    .lade-admin-actions {
+        flex-direction: column;
+    }
+
+    .lade-admin-action-btn {
+        width: 100%;
+    }
+
+    /* Responsive table with horizontal scroll */
     .lade-rsvp-table {
-        font-size: 12px;
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        font-size: 11px;
     }
-    
+
     .lade-rsvp-table th,
     .lade-rsvp-table td {
         padding: 8px 6px;
+        white-space: nowrap;
+    }
+
+    /* Search and filter stack */
+    .lade-admin-panel-body > div[style*="display: flex"] {
+        flex-direction: column;
+    }
+
+    #ladeSearchInput_${this.config.eventId},
+    #ladeStatusFilter_${this.config.eventId} {
+        width: 100%;
+    }
+
+    /* Larger touch targets */
+    .lade-control-btn,
+    .lade-settings-btn,
+    .lade-admin-tab {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+
+    /* Stats grid responsive */
+    .lade-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* QR modal responsive */
+    .lade-password-box {
+        width: 90%;
+        padding: 20px;
+    }
+}
+
+/* Tablet */
+@media (min-width: 481px) and (max-width: 768px) {
+    .lade-widget {
+        width: 90vw !important;
+        height: 70vh !important;
+    }
+
+    .lade-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+    /* Larger interactive elements */
+    .lade-control-btn,
+    .lade-settings-btn,
+    .lade-admin-tab,
+    .lade-admin-action-btn,
+    .lade-submit-btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    /* Remove hover effects on touch devices */
+    .lade-submit-btn:hover {
+        transform: none;
+    }
+
+    /* Better scroll behavior */
+    .lade-widget-body {
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    :root {
+        --lade-shadow-dark: #000000;
+        --lade-shadow-light: #ffffff;
+    }
+
+    .lade-form-input,
+    .lade-form-select {
+        border: 2px solid var(--lade-text-primary);
+    }
+
+    .lade-status-badge {
+        border: 2px solid currentColor;
+    }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .lade-shake,
+    .lade-deadline-pill,
+    .lade-spots-badge {
+        animation: none !important;
     }
 }
 
@@ -1371,12 +1598,25 @@ if (!defined('ABSPATH')) {
         position: static;
         box-shadow: none;
     }
-    
+
     .lade-widget-header,
     .lade-admin-tab,
     .lade-resize-handle,
-    .lade-branding {
-        display: none;
+    .lade-branding,
+    .lade-admin-panel,
+    .lade-toast-container {
+        display: none !important;
+    }
+
+    .lade-widget-body {
+        display: block !important;
+        padding: 0;
+    }
+
+    .lade-event-card,
+    .lade-success-message {
+        box-shadow: none;
+        border: 1px solid #ccc;
     }
 }
 </style>
@@ -1730,113 +1970,140 @@ if (!defined('ABSPATH')) {
         
         buildRSVPForm: function() {
             const fields = this.config.fields;
-            
+
             return `
-                <form class="lade-form" id="ladeForm_${this.config.eventId}" onsubmit="return false;">
+                <form class="lade-form" id="ladeForm_${this.config.eventId}" onsubmit="return false;" role="form" aria-label="RSVP Registration Form">
                     ${fields.includes('name') ? `
                     <div class="lade-form-group" id="ladeNameGroup_${this.config.eventId}">
                         <label class="lade-form-label" for="ladeName_${this.config.eventId}">
-                            Full Name <span class="lade-required">*</span>
+                            Full Name <span class="lade-required" aria-hidden="true">*</span>
+                            <span class="sr-only">(required)</span>
                         </label>
-                        <input 
-                            type="text" 
-                            id="ladeName_${this.config.eventId}" 
-                            class="lade-form-input" 
+                        <input
+                            type="text"
+                            id="ladeName_${this.config.eventId}"
+                            name="name"
+                            class="lade-form-input"
                             placeholder="Enter your full name"
                             required
                             autocomplete="name"
+                            aria-required="true"
+                            aria-describedby="ladeNameError_${this.config.eventId}"
                         >
-                        <span class="lade-form-error" id="ladeNameError_${this.config.eventId}">Please enter your name</span>
+                        <span class="lade-form-error" id="ladeNameError_${this.config.eventId}" role="alert">Please enter your name</span>
                     </div>
                     ` : ''}
-                    
+
                     ${fields.includes('email') ? `
                     <div class="lade-form-group" id="ladeEmailGroup_${this.config.eventId}">
                         <label class="lade-form-label" for="ladeEmail_${this.config.eventId}">
-                            Email Address <span class="lade-required">*</span>
+                            Email Address <span class="lade-required" aria-hidden="true">*</span>
+                            <span class="sr-only">(required)</span>
                         </label>
-                        <input 
-                            type="email" 
-                            id="ladeEmail_${this.config.eventId}" 
-                            class="lade-form-input" 
+                        <input
+                            type="email"
+                            id="ladeEmail_${this.config.eventId}"
+                            name="email"
+                            class="lade-form-input"
                             placeholder="Enter your email"
                             required
                             autocomplete="email"
+                            aria-required="true"
+                            aria-describedby="ladeEmailError_${this.config.eventId}"
                         >
-                        <span class="lade-form-error" id="ladeEmailError_${this.config.eventId}">Please enter a valid email</span>
+                        <span class="lade-form-error" id="ladeEmailError_${this.config.eventId}" role="alert">Please enter a valid email</span>
                     </div>
                     ` : ''}
-                    
+
                     ${fields.includes('phone') ? `
                     <div class="lade-form-group" id="ladePhoneGroup_${this.config.eventId}">
                         <label class="lade-form-label" for="ladePhone_${this.config.eventId}">
-                            Phone Number <span class="lade-required">*</span>
+                            Phone Number <span class="lade-required" aria-hidden="true">*</span>
+                            <span class="sr-only">(required)</span>
                         </label>
-                        <input 
-                            type="tel" 
-                            id="ladePhone_${this.config.eventId}" 
-                            class="lade-form-input" 
+                        <input
+                            type="tel"
+                            id="ladePhone_${this.config.eventId}"
+                            name="phone"
+                            class="lade-form-input"
                             placeholder="Enter your phone number"
                             required
                             autocomplete="tel"
+                            aria-required="true"
+                            aria-describedby="ladePhoneError_${this.config.eventId}"
+                            pattern="[0-9\\s\\-\\+\\(\\)]{10,}"
                         >
-                        <span class="lade-form-error" id="ladePhoneError_${this.config.eventId}">Please enter a valid phone number</span>
+                        <span class="lade-form-error" id="ladePhoneError_${this.config.eventId}" role="alert">Please enter a valid phone number</span>
                     </div>
                     ` : ''}
-                    
+
                     ${fields.includes('guests') ? `
                     <div class="lade-form-group" id="ladeGuestsGroup_${this.config.eventId}">
                         <label class="lade-form-label" for="ladeGuests_${this.config.eventId}">
-                            Number of Guests <span class="lade-required">*</span>
+                            Number of Guests <span class="lade-required" aria-hidden="true">*</span>
+                            <span class="sr-only">(required)</span>
                         </label>
-                        <select 
-                            id="ladeGuests_${this.config.eventId}" 
+                        <select
+                            id="ladeGuests_${this.config.eventId}"
+                            name="guests"
                             class="lade-form-select"
                             required
+                            aria-required="true"
+                            aria-describedby="ladeGuestsHelp_${this.config.eventId}"
                         >
                             <option value="">Select guests</option>
                             ${Array.from({length: 10}, (_, i) => `
                                 <option value="${i + 1}">${i + 1} Guest${i > 0 ? 's' : ''}</option>
                             `).join('')}
                         </select>
+                        <span id="ladeGuestsHelp_${this.config.eventId}" class="sr-only">Select the number of guests attending with you</span>
                     </div>
                     ` : ''}
-                    
+
                     ${fields.includes('dietary') ? `
                     <div class="lade-form-group" id="ladeDietaryGroup_${this.config.eventId}">
-                        <label class="lade-form-label">Dietary Preferences (optional)</label>
-                        <div class="lade-dietary-options">
+                        <label class="lade-form-label" id="ladeDietaryLabel_${this.config.eventId}">
+                            Dietary Preferences <span class="lade-optional">(optional)</span>
+                        </label>
+                        <div class="lade-dietary-options" role="group" aria-labelledby="ladeDietaryLabel_${this.config.eventId}">
                             <div class="lade-dietary-option">
-                                <input type="checkbox" id="ladeDietVegan_${this.config.eventId}" value="Vegan">
+                                <input type="checkbox" id="ladeDietVegan_${this.config.eventId}" name="dietary" value="Vegan" aria-label="Vegan diet">
                                 <label for="ladeDietVegan_${this.config.eventId}">🌱 Vegan</label>
                             </div>
                             <div class="lade-dietary-option">
-                                <input type="checkbox" id="ladeDietVegetarian_${this.config.eventId}" value="Vegetarian">
+                                <input type="checkbox" id="ladeDietVegetarian_${this.config.eventId}" name="dietary" value="Vegetarian" aria-label="Vegetarian diet">
                                 <label for="ladeDietVegetarian_${this.config.eventId}">🥬 Vegetarian</label>
                             </div>
                             <div class="lade-dietary-option">
-                                <input type="checkbox" id="ladeDietGluten_${this.config.eventId}" value="Gluten-Free">
+                                <input type="checkbox" id="ladeDietGluten_${this.config.eventId}" name="dietary" value="Gluten-Free" aria-label="Gluten-free diet">
                                 <label for="ladeDietGluten_${this.config.eventId}">🌾 Gluten-Free</label>
                             </div>
                             <div class="lade-dietary-option">
-                                <input type="checkbox" id="ladeDietNut_${this.config.eventId}" value="Nut Allergy">
+                                <input type="checkbox" id="ladeDietNut_${this.config.eventId}" name="dietary" value="Nut Allergy" aria-label="Nut allergy">
                                 <label for="ladeDietNut_${this.config.eventId}">🥜 Nut Allergy</label>
                             </div>
                             <div class="lade-dietary-option">
-                                <input type="checkbox" id="ladeDietNone_${this.config.eventId}" value="None">
+                                <input type="checkbox" id="ladeDietNone_${this.config.eventId}" name="dietary" value="None" aria-label="No dietary restrictions">
                                 <label for="ladeDietNone_${this.config.eventId}">✅ None</label>
                             </div>
                         </div>
                     </div>
                     ` : ''}
-                    
-                    <button 
-                        type="submit" 
-                        id="ladeSubmitBtn_${this.config.eventId}" 
+
+                    <button
+                        type="submit"
+                        id="ladeSubmitBtn_${this.config.eventId}"
                         class="lade-submit-btn"
                         disabled
+                        aria-live="polite"
                     >
-                        Reserve My Spot
+                        <span class="lade-btn-text">Reserve My Spot</span>
+                        <span class="lade-btn-loading" aria-hidden="true" style="display: none;">
+                            <svg class="lade-spinner" viewBox="0 0 24 24" width="20" height="20">
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" stroke-dasharray="60" stroke-linecap="round"/>
+                            </svg>
+                            Processing...
+                        </span>
                     </button>
                 </form>
             `;
@@ -1918,10 +2185,19 @@ if (!defined('ABSPATH')) {
         
         buildFooter: function() {
             if (!this.config.showBranding) return '';
-            
+
             return `
                 <div class="lade-branding">
-                    <a href="https://ladestack.in" target="_blank" rel="noopener">Lade Stack RSVP</a> • Free AI-Powered Widget
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 6px;">
+                        <svg width="20" height="20" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+                            <rect width="40" height="40" rx="8" fill="var(--lade-primary)"/>
+                            <path d="M12 20L18 26L28 14" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span style="font-weight: 700; color: var(--lade-primary);">Lade Stack</span>
+                    </div>
+                    <a href="https://ladestack.in" target="_blank" rel="noopener" style="font-size: 11px;">
+                        Free AI-Powered RSVP Widget →
+                    </a>
                 </div>
             `;
         },
@@ -2225,6 +2501,17 @@ if (!defined('ABSPATH')) {
                     state.minimized = isMinimized;
                     localStorage.setItem('lade_rsvp_widget_state', JSON.stringify(state));
                 });
+
+                // Keyboard support for minimize
+                minimizeBtn.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        minimizeBtn.click();
+                    }
+                });
+                minimizeBtn.setAttribute('role', 'button');
+                minimizeBtn.setAttribute('aria-label', 'Minimize widget');
+                minimizeBtn.setAttribute('tabindex', '0');
             }
 
             if (closeBtn) {
@@ -2232,6 +2519,17 @@ if (!defined('ABSPATH')) {
                     widget.classList.add('hidden');
                     this.showToast('Widget hidden. Refresh page to show again.', 'info');
                 });
+
+                // Keyboard support for close
+                closeBtn.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        closeBtn.click();
+                    }
+                });
+                closeBtn.setAttribute('role', 'button');
+                closeBtn.setAttribute('aria-label', 'Close widget');
+                closeBtn.setAttribute('tabindex', '0');
             }
 
             // Field toggle modal
@@ -2239,7 +2537,29 @@ if (!defined('ABSPATH')) {
                 settingsBtn.addEventListener('click', () => {
                     this.openFieldModal();
                 });
+
+                // Keyboard support
+                settingsBtn.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.openFieldModal();
+                    }
+                });
+                settingsBtn.setAttribute('role', 'button');
+                settingsBtn.setAttribute('aria-label', 'Toggle form fields');
+                settingsBtn.setAttribute('tabindex', '0');
             }
+
+            // Global keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                // Escape key closes modals
+                if (e.key === 'Escape') {
+                    const activeModal = document.querySelector('.lade-password-modal.active, .lade-field-modal.active, .lade-admin-panel.active');
+                    if (activeModal) {
+                        activeModal.classList.remove('active');
+                    }
+                }
+            });
 
             // Field modal save/cancel
             const fieldModal = document.getElementById('ladeFieldModal_' + this.config.eventId);
@@ -2251,18 +2571,53 @@ if (!defined('ABSPATH')) {
                     saveBtn.addEventListener('click', () => {
                         this.saveFieldSettings();
                     });
+                    saveBtn.setAttribute('role', 'button');
+                    saveBtn.setAttribute('tabindex', '0');
                 }
 
                 if (cancelBtn) {
                     cancelBtn.addEventListener('click', () => {
                         fieldModal.classList.remove('active');
                     });
+                    cancelBtn.setAttribute('role', 'button');
+                    cancelBtn.setAttribute('tabindex', '0');
                 }
 
                 // Close on outside click
                 fieldModal.addEventListener('click', (e) => {
                     if (e.target === fieldModal) {
                         fieldModal.classList.remove('active');
+                    }
+                });
+
+                // Focus trap for modal
+                fieldModal.addEventListener('keydown', (e) => {
+                    if (e.key === 'Tab') {
+                        const focusableElements = fieldModal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+                        const firstElement = focusableElements[0];
+                        const lastElement = focusableElements[focusableElements.length - 1];
+
+                        if (e.shiftKey && document.activeElement === firstElement) {
+                            e.preventDefault();
+                            lastElement.focus();
+                        } else if (!e.shiftKey && document.activeElement === lastElement) {
+                            e.preventDefault();
+                            firstElement.focus();
+                        }
+                    }
+                });
+            }
+
+            // Form keyboard navigation - Enter to submit
+            const form = this.elements.form;
+            if (form) {
+                form.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+                        e.preventDefault();
+                        const submitBtn = document.getElementById('ladeSubmitBtn_' + this.config.eventId);
+                        if (submitBtn && !submitBtn.disabled) {
+                            submitBtn.click();
+                        }
                     }
                 });
             }
@@ -2409,12 +2764,12 @@ if (!defined('ABSPATH')) {
         handleFormSubmit: function() {
             const submitBtn = document.getElementById('ladeSubmitBtn_' + this.config.eventId);
             const widget = this.elements.widget;
-            
+
             // Validate all fields first
             const form = this.elements.form;
             const inputs = form.querySelectorAll('.lade-form-input[required], .lade-form-select[required]');
             let hasErrors = false;
-            
+
             inputs.forEach(input => {
                 if (!this.validateField(input)) {
                     hasErrors = true;
@@ -2427,23 +2782,38 @@ if (!defined('ABSPATH')) {
                 setTimeout(() => {
                     widget.classList.remove('lade-shake');
                 }, 500);
+                
+                // Announce error to screen readers
+                this.showToast('Please fix the errors in the form', 'error');
                 return;
             }
 
+            // Set loading state
             submitBtn.classList.add('loading');
-            submitBtn.textContent = 'Processing...';
+            submitBtn.disabled = true;
+            submitBtn.setAttribute('aria-busy', 'true');
 
-            // Gather form data
-            const formData = {
-                id: 'rsvp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
-                name: document.getElementById('ladeName_' + this.config.eventId)?.value.trim() || '',
-                email: document.getElementById('ladeEmail_' + this.config.eventId)?.value.trim() || '',
-                phone: document.getElementById('ladePhone_' + this.config.eventId)?.value.trim() || '',
-                guests: parseInt(document.getElementById('ladeGuests_' + this.config.eventId)?.value) || 1,
-                dietary: [],
-                status: this.config.approvalMode ? 'pending' : 'approved',
-                timestamp: new Date().toISOString()
-            };
+            // Gather form data with error handling
+            let formData;
+            try {
+                formData = {
+                    id: 'rsvp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                    name: document.getElementById('ladeName_' + this.config.eventId)?.value.trim() || '',
+                    email: document.getElementById('ladeEmail_' + this.config.eventId)?.value.trim() || '',
+                    phone: document.getElementById('ladePhone_' + this.config.eventId)?.value.trim() || '',
+                    guests: parseInt(document.getElementById('ladeGuests_' + this.config.eventId)?.value) || 1,
+                    dietary: [],
+                    status: this.config.approvalMode ? 'pending' : 'approved',
+                    timestamp: new Date().toISOString()
+                };
+            } catch (error) {
+                console.error('Error gathering form data:', error);
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+                submitBtn.setAttribute('aria-busy', 'false');
+                this.showToast('An error occurred. Please try again.', 'error');
+                return;
+            }
 
             // Gather dietary preferences
             if (this.config.fields.includes('dietary')) {
@@ -2490,15 +2860,18 @@ if (!defined('ABSPATH')) {
                 // Show success message
                 this.showSuccessMessage(formData);
 
+                // Reset button state
                 submitBtn.classList.remove('loading');
-                submitBtn.textContent = 'Reserve My Spot';
+                submitBtn.disabled = false;
+                submitBtn.setAttribute('aria-busy', 'false');
             }, 1500);
         },
 
         handleWaitlistSubmit: function() {
             const submitBtn = document.getElementById('ladeWaitlistSubmitBtn_' + this.config.eventId);
             submitBtn.classList.add('loading');
-            submitBtn.textContent = 'Processing...';
+            submitBtn.disabled = true;
+            submitBtn.setAttribute('aria-busy', 'true');
 
             const formData = {
                 id: 'waitlist_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
@@ -2511,9 +2884,14 @@ if (!defined('ABSPATH')) {
             setTimeout(() => {
                 this.state.waitlist.push(formData);
                 this.saveState();
-                
+
                 this.showToast('✅ Added to waitlist! We\'ll notify you if spots open up.', 'success');
-                
+
+                // Reset button state
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+                submitBtn.setAttribute('aria-busy', 'false');
+
                 // Rebuild widget to show confirmation
                 setTimeout(() => {
                     this.init();

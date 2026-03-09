@@ -1,0 +1,26 @@
+/**
+ * Lade Stack RSVP Widget - Block Editor Styles
+ */
+
+.wp-block-lade-stack-rsvp-widget {
+    margin: 20px 0;
+}
+
+.wp-block-lade-stack-rsvp-widget .components-panel__body {
+    border: none;
+}
+
+.wp-block-lade-stack-rsvp-widget .components-panel__body-title {
+    font-weight: 600;
+}
+
+/* Block toolbar */
+.block-editor-block-list__block[data-type="lade-stack/rsvp-widget"] {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* Inspector controls */
+.components-panel__body.is-opened {
+    border-bottom: 1px solid #e0e5ec;
+}
