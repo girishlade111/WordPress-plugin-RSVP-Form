@@ -163,6 +163,52 @@ if (!defined('ABSPATH')) {
     max-width: 200px;
 }
 
+/* Deadline Countdown Pill Badge */
+.lade-deadline-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: var(--lade-bg-primary);
+    box-shadow:
+        inset 2px 2px 4px var(--lade-shadow-dark),
+        inset -2px -2px 4px var(--lade-shadow-light);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--lade-primary);
+    margin-left: 8px;
+    animation: ladePulseTimer 2s infinite;
+}
+
+.lade-deadline-pill.urgent {
+    color: var(--lade-danger);
+    animation: ladePulseTimer 1s infinite;
+}
+
+.lade-deadline-pill.expired {
+    color: var(--lade-text-muted);
+    background: var(--lade-shadow-dark);
+    animation: none;
+}
+
+@keyframes ladePulseTimer {
+    0%, 100% { 
+        opacity: 1; 
+        transform: scale(1);
+        box-shadow:
+            inset 2px 2px 4px var(--lade-shadow-dark),
+            inset -2px -2px 4px var(--lade-shadow-light);
+    }
+    50% { 
+        opacity: 0.7; 
+        transform: scale(0.98);
+        box-shadow:
+            inset 3px 3px 6px var(--lade-shadow-dark),
+            inset -3px -3px 6px var(--lade-shadow-light);
+    }
+}
+
 .lade-widget-controls {
     display: flex;
     gap: 8px;
@@ -1485,6 +1531,14 @@ if (!defined('ABSPATH')) {
         // Check if deadline has passed
         isDeadlinePassed: function() {
             if (!this.config.deadline) return false;
+            
+            // Check if already locked in storage
+            const storageKey = 'lade_rsvp_deadline_' + this.config.eventId;
+            const stored = localStorage.getItem(storageKey);
+            if (stored && JSON.parse(stored).locked) {
+                return true;
+            }
+            
             const deadline = new Date(this.config.deadline + 'T23:59:59');
             return new Date() > deadline;
         },
@@ -1538,11 +1592,20 @@ if (!defined('ABSPATH')) {
         },
         
         buildHeader: function() {
+            const deadlinePill = this.config.deadline ? 
+                `<span class="lade-deadline-pill" id="ladeDeadlinePill_${this.config.eventId}">
+                    <span>⏰</span>
+                    <span id="ladeDeadlineText_${this.config.eventId}">Loading...</span>
+                </span>` : '';
+
             return `
                 <div class="lade-widget-header" id="ladeHeader_${this.config.eventId}">
                     <div class="lade-header-left">
                         <span class="lade-drag-icon">⋮⋮</span>
-                        <span class="lade-widget-title">${this.escapeHtml(this.config.eventName)}</span>
+                        <span class="lade-widget-title">
+                            ${this.escapeHtml(this.config.eventName)}
+                            ${deadlinePill}
+                        </span>
                     </div>
                     <div class="lade-widget-controls">
                         <button class="lade-settings-btn" id="ladeSettingsBtn_${this.config.eventId}" title="Toggle Fields">⚙️</button>
@@ -2764,43 +2827,97 @@ if (!defined('ABSPATH')) {
         // ============================================
         // COUNTDOWN TIMER
         // ============================================
-        
+
         startCountdown: function() {
             const updateCountdown = () => {
-                if (this.isDeadlinePassed()) {
-                    this.init(); // Rebuild widget to show expired message
-                    return;
-                }
-                
                 const deadline = new Date(this.config.deadline + 'T23:59:59');
                 const now = new Date();
                 const diff = deadline - now;
-                
+
+                // Get pill element
+                const pillEl = document.getElementById('ladeDeadlinePill_' + this.config.eventId);
+                const textEl = document.getElementById('ladeDeadlineText_' + this.config.eventId);
+
+                if (!pillEl || !textEl) return;
+
+                // Check if deadline passed
+                if (diff <= 0) {
+                    // Deadline expired - lock form
+                    pillEl.classList.add('expired');
+                    pillEl.classList.remove('urgent');
+                    textEl.textContent = 'RSVP Closed';
+                    
+                    // Rebuild widget to show expired message if form still visible
+                    if (!this.isFormLocked()) {
+                        this.lockForm();
+                    }
+                    return;
+                }
+
                 const days = Math.floor(diff / (1000 * 60 * 60 * 24));
                 const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                
-                const countdownEl = document.getElementById('ladeCountdown_' + this.config.eventId);
-                if (countdownEl) {
-                    countdownEl.innerHTML = `
-                        <div class="lade-countdown-item">
-                            <span class="lade-countdown-value">${String(days).padStart(2, '0')}</span>
-                            <span class="lade-countdown-label">Days</span>
-                        </div>
-                        <div class="lade-countdown-item">
-                            <span class="lade-countdown-value">${String(hours).padStart(2, '0')}</span>
-                            <span class="lade-countdown-label">Hours</span>
-                        </div>
-                        <div class="lade-countdown-item">
-                            <span class="lade-countdown-value">${String(minutes).padStart(2, '0')}</span>
-                            <span class="lade-countdown-label">Mins</span>
-                        </div>
-                    `;
+
+                // Format countdown text
+                let countdownText = '';
+                if (days > 0) {
+                    countdownText = `${days}d ${hours}h ${minutes}m`;
+                } else if (hours > 0) {
+                    countdownText = `${hours}h ${minutes}m`;
+                } else {
+                    countdownText = `${minutes}m`;
                 }
+
+                textEl.textContent = `RSVP closes in ${countdownText}`;
+
+                // Add urgent class if less than 24 hours
+                if (diff < 24 * 60 * 60 * 1000) {
+                    pillEl.classList.add('urgent');
+                } else {
+                    pillEl.classList.remove('urgent');
+                }
+
+                // Save deadline to storage
+                this.saveDeadline(deadline);
             };
-            
+
+            // Update immediately then every 10 seconds for smooth countdown
             updateCountdown();
-            setInterval(updateCountdown, 60000); // Update every minute
+            setInterval(updateCountdown, 10000);
+        },
+
+        // Check if form is locked
+        isFormLocked: function() {
+            const storageKey = 'lade_rsvp_deadline_' + this.config.eventId;
+            const stored = localStorage.getItem(storageKey);
+            return stored ? JSON.parse(stored).locked : false;
+        },
+
+        // Lock form when deadline passes
+        lockForm: function() {
+            const storageKey = 'lade_rsvp_deadline_' + this.config.eventId;
+            localStorage.setItem(storageKey, JSON.stringify({
+                deadline: this.config.deadline,
+                locked: true,
+                lockedAt: new Date().toISOString()
+            }));
+
+            // Rebuild widget to show expired state
+            this.init();
+        },
+
+        // Save deadline to storage
+        saveDeadline: function(deadline) {
+            const storageKey = 'lade_rsvp_deadline_' + this.config.eventId;
+            const stored = localStorage.getItem(storageKey);
+            
+            if (!stored || !JSON.parse(stored).locked) {
+                localStorage.setItem(storageKey, JSON.stringify({
+                    deadline: this.config.deadline,
+                    locked: false,
+                    lastUpdate: new Date().toISOString()
+                }));
+            }
         },
         
         // ============================================
