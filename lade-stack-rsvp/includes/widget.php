@@ -1643,11 +1643,27 @@ if (!defined('ABSPATH')) {
 
 (function() {
     'use strict';
-    
+
+    // ============================================
+    // ERROR BOUNDARY & GLOBAL ERROR HANDLING
+    // ============================================
+
+    // Global error handler for uncaught errors
+    window.addEventListener('error', function(event) {
+        console.error('🚨 Lade RSVP Global Error:', event.message);
+        console.error('Stack:', event.error?.stack);
+        // Don't prevent default - let browser handle it too
+    });
+
+    // Unhandled promise rejection handler
+    window.addEventListener('unhandledrejection', function(event) {
+        console.error('🚨 Lade RSVP Unhandled Promise Rejection:', event.reason);
+    });
+
     // ============================================
     // CONFIGURATION & STATE MANAGEMENT
     // ============================================
-    
+
     const LadeRSVP = {
         config: {},
         state: {
@@ -1658,43 +1674,94 @@ if (!defined('ABSPATH')) {
             settings: {}
         },
         elements: {},
-        
-        // Initialize widget
+
+        // Initialize widget with error boundary
         init: function() {
+            try {
+                const container = document.getElementById('lade-rsvp-widget-container');
+                if (!container) {
+                    console.warn('⚠️ Lade RSVP: Widget container not found');
+                    return;
+                }
+
+                // Load configuration from data attributes
+                this.loadConfig(container);
+
+                // Initialize storage with error handling
+                this.initStorage();
+
+                // Build widget HTML
+                this.buildWidget();
+
+                // Initialize functionality with individual error handling
+                this.safeInit('initDraggable');
+                this.safeInit('initResizable');
+                this.safeInit('initControls');
+                this.safeInit('initForm');
+                this.safeInit('initAdminPanel');
+
+                // Start countdown if deadline set
+                if (this.config.deadline) {
+                    this.startCountdown();
+                }
+
+                // Sync across tabs
+                this.initTabSync();
+
+                // Pro Features: PWA support
+                if (this.config.showBranding) {
+                    this.createManifest();
+                    this.registerServiceWorker();
+                }
+
+                console.log('✅ Lade Stack RSVP Widget initialized for: ' + this.config.eventName);
+            } catch (error) {
+                console.error('🚨 Lade RSVP Initialization Error:', error);
+                // Fallback: Show error message to user
+                this.showInitError(error);
+            }
+        },
+
+        // Safe initialization wrapper for individual components
+        safeInit: function(methodName) {
+            try {
+                if (typeof this[methodName] === 'function') {
+                    this[methodName]();
+                }
+            } catch (error) {
+                console.error('🚨 Lade RSVP Error in ' + methodName + ':', error);
+                // Continue initializing other components
+            }
+        },
+
+        // Show initialization error to user
+        showInitError: function(error) {
             const container = document.getElementById('lade-rsvp-widget-container');
             if (!container) return;
 
-            // Load configuration from data attributes
-            this.loadConfig(container);
-
-            // Initialize storage
-            this.initStorage();
-
-            // Build widget HTML
-            this.buildWidget();
-
-            // Initialize functionality
-            this.initDraggable();
-            this.initResizable();
-            this.initControls();
-            this.initForm();
-            this.initAdminPanel();
-
-            // Start countdown if deadline set
-            if (this.config.deadline) {
-                this.startCountdown();
-            }
-
-            // Sync across tabs
-            this.initTabSync();
-
-            // Pro Features: PWA support
-            if (this.config.showBranding) {
-                this.createManifest();
-                this.registerServiceWorker();
-            }
-
-            console.log('✅ Lade Stack RSVP Widget initialized for: ' + this.config.eventName);
+            container.innerHTML = `
+                <div style="
+                    padding: 20px;
+                    background: #fef2f2;
+                    border: 2px solid #f56565;
+                    border-radius: 12px;
+                    color: #c53030;
+                    font-family: sans-serif;
+                    text-align: center;
+                ">
+                    <h4 style="margin: 0 0 10px; font-size: 16px;">⚠️ RSVP Widget Error</h4>
+                    <p style="margin: 0 0 15px; font-size: 14px;">The widget could not be loaded. Please refresh the page.</p>
+                    <button onclick="location.reload()" style="
+                        padding: 10px 20px;
+                        background: #667eea;
+                        color: white;
+                        border: none;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        font-size: 14px;
+                    ">Refresh Page</button>
+                </div>
+            `;
         },
 
         // Internationalization (i18n) - English/Marathi translations

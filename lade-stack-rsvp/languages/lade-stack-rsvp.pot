@@ -1,0 +1,381 @@
+# Copyright (C) 2026 Lade Stack
+# This file is distributed under the GPL v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Lade Stack RSVP Widget 1.0.0\n"
+"Report-Msgid-Bugs-To: https://ladestack.in/support\n"
+"Last-Translator: support@ladestack.in\n"
+"Language-Team: Lade Stack <support@ladestack.in>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-03-09T00:00:00+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: en\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: WP-CLI\n"
+"X-Domain: lade-stack-rsvp\n"
+
+#: lade-stack-rsvp.php
+msgid "Lade Stack RSVP Widget"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "https://ladestack.in"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Free AI-Powered Client-Side RSVP Widget with Draggable Form, Live Counter, QR Codes, EmailJS Integration & Admin Dashboard. No database required - uses localStorage."
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Settings"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Lade Stack Event"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "🎉 Lade Stack RSVP Widget Settings"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Configure default settings for your RSVP widgets. Each widget can override these via shortcode attributes."
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Default Max Capacity"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Default maximum RSVP capacity for new widgets."
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "EmailJS Service ID"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Your EmailJS Service ID (optional, can set per-widget)."
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "EmailJS Template ID"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Your EmailJS Template ID."
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "EmailJS Public Key"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Your EmailJS Public Key."
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "📖 Quick Start Guide"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Step 1: Add Widget to Page"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Use the shortcode in any page or post:"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Step 2: Configure EmailJS (Optional)"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Sign up at"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "free tier available"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Create an Email Service (e.g., Gmail)"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Create an Email Template with variables:"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Add your Service ID, Template ID, and Public Key to the shortcode or settings above"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Step 3: Customize Fields"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Control which fields appear:"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Available fields:"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Step 4: Enable Approval Mode"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "📋 Shortcode Reference"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Attribute"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Default"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Description"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Name of your event"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Event date (YYYY-MM-DD)"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Maximum number of RSVPs"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Language: en (English) or mr (Marathi)"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Google Analytics Tracking ID (e.g., G-XXXXXXXXXX)"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "🔧 Export/Import Data"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Export all RSVP data from localStorage or clear widget data."
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Export All Data"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Clear All Widget Data"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Export completed!"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Are you sure? This will delete all RSVP data for all events!"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "All widget data cleared!"
+msgstr ""
+
+#: lade-stack-rsvp.php
+msgid "Data cleared successfully"
+msgstr ""
+
+#: block.js
+msgid "Add a draggable RSVP widget with live capacity counter, QR codes, and admin dashboard."
+msgstr ""
+
+#: block.js
+msgid "rsvp"
+msgstr ""
+
+#: block.js
+msgid "event"
+msgstr ""
+
+#: block.js
+msgid "registration"
+msgstr ""
+
+#: block.js
+msgid "form"
+msgstr ""
+
+#: block.js
+msgid "calendar"
+msgstr ""
+
+#: block.js
+msgid "📅 Event Details"
+msgstr ""
+
+#: block.js
+msgid "Event Name"
+msgstr ""
+
+#: block.js
+msgid "My Awesome Event"
+msgstr ""
+
+#: block.js
+msgid "Event Time"
+msgstr ""
+
+#: block.js
+msgid "Event Location"
+msgstr ""
+
+#: block.js
+msgid "Format: YYYY-MM-DD"
+msgstr ""
+
+#: block.js
+msgid "🎫 RSVP Settings"
+msgstr ""
+
+#: block.js
+msgid "Max Capacity"
+msgstr ""
+
+#: block.js
+msgid "RSVP Deadline"
+msgstr ""
+
+#: block.js
+msgid "Approval Mode"
+msgstr ""
+
+#: block.js
+msgid "Require admin approval before confirming RSVPs"
+msgstr ""
+
+#: block.js
+msgid "Admin Password"
+msgstr ""
+
+#: block.js
+msgid "📝 Form Fields"
+msgstr ""
+
+#: block.js
+msgid "Fields (comma-separated)"
+msgstr ""
+
+#: block.js
+msgid "Available: name, email, phone, guests, dietary"
+msgstr ""
+
+#: block.js
+msgid "📧 EmailJS Integration"
+msgstr ""
+
+#: block.js
+msgid "Get EmailJS Keys (Free)"
+msgstr ""
+
+#: block.js
+msgid "Service ID"
+msgstr ""
+
+#: block.js
+msgid "Template ID"
+msgstr ""
+
+#: block.js
+msgid "Public Key"
+msgstr ""
+
+#: block.js
+msgid "🌐 Pro Features"
+msgstr ""
+
+#: block.js
+msgid "Language"
+msgstr ""
+
+#: block.js
+msgid "English"
+msgstr ""
+
+#: block.js
+msgid "Marathi"
+msgstr ""
+
+#: block.js
+msgid "Widget language (English/Marathi)"
+msgstr ""
+
+#: block.js
+msgid "Google Analytics ID"
+msgstr ""
+
+#: block.js
+msgid "Track RSVP submissions in Analytics"
+msgstr ""
+
+#: block.js
+msgid "Custom CSS Variables"
+msgstr ""
+
+#: block.js
+msgid "JSON format CSS variables for custom theming"
+msgstr ""
+
+#: block.js
+msgid "🎨 Appearance"
+msgstr ""
+
+#: block.js
+msgid "Theme"
+msgstr ""
+
+#: block.js
+msgid "☀️ Light"
+msgstr ""
+
+#: block.js
+msgid "🌙 Dark"
+msgstr ""
+
+#: block.js
+msgid "Show Lade Stack Branding"
+msgstr ""
+
+#: block.js
+msgid "Display \"Powered by Lade Stack\" footer"
+msgstr ""
+
+#: block.js
+msgid "RSVP Widget Preview"
+msgstr ""
+
+#: block.js
+msgid "spots available"
+msgstr ""
+
+#: block.js
+msgid "Approval Mode Enabled"
+msgstr ""
+
+#: block.js
+msgid "मराठी भाषा सक्षम"
+msgstr ""
+
+#: block.js
+msgid "Widget will appear here on the front end"
+msgstr ""
