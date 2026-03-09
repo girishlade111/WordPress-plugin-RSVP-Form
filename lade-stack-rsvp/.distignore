@@ -1,0 +1,68 @@
+# =============================================================================
+# .distignore - Files to exclude from WordPress.org distribution package
+# These files are for development only and should not be in the ZIP
+# =============================================================================
+
+# Development files
+.git/
+.gitignore
+.env.example
+.env
+.env.local
+.env.*
+
+# Documentation (dev only)
+DEBUG-REPORT.md
+CREDENTIALS-TEMPLATE.md
+INSTALLATION.md
+CHANGELOG.md
+
+# Build files
+build/
+dist/
+*.log
+
+# Test files
+test-widget.html
+tests/
+phpunit.xml
+phpunit.xml.dist
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-*
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Node files (if using build tools)
+node_modules/
+package.json
+package-lock.json
+yarn.lock
+webpack.config.js
+
+# Composer files
+composer.json
+composer.lock
+vendor/
+
+# Assets placeholders
+assets/images/*.svg
+assets/README.md
+
+# Scripts
+build-plugin.bat
+build-plugin.sh
+
+# Cache
+cache/
+tmp/
+temp/
+*.cache

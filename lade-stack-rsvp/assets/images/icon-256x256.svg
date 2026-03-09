@@ -1,0 +1,18 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="256" height="256" rx="64" fill="#667eea"/>
+  
+  <!-- Calendar Icon -->
+  <rect x="64" y="80" width="128" height="128" rx="16" fill="white" opacity="0.95"/>
+  
+  <!-- Calendar Header -->
+  <rect x="64" y="80" width="128" height="40" rx="16" fill="#48bb78"/>
+  <rect x="64" y="104" width="128" height="16" fill="#48bb78"/>
+  
+  <!-- Grid Lines -->
+  <line x1="128" y1="128" x2="128" y2="208" stroke="#e0e5ec" stroke-width="2"/>
+  <line x1="64" y1="160" x2="192" y2="160" stroke="#e0e5ec" stroke-width="2"/>
+  
+  <!-- Checkmark -->
+  <path d="M 112 176 L 128 192 L 152 160" stroke="#48bb78" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>
