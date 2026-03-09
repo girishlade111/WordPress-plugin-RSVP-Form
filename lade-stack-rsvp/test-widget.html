@@ -391,13 +391,38 @@
     
     <!-- Include Widget -->
     <script src="includes/widget.php"></script>
-    
+
     <script>
+        // ============================================
+        // EMAILJS SETUP - Replace with your free keys
+        // ============================================
+        // 1. Sign up at https://www.emailjs.com/ (free)
+        // 2. Add Email Service (Gmail, Outlook, etc.)
+        // 3. Create Email Template with variables:
+        //    {{name}}, {{email}}, {{event_name}}, {{event_date}}, 
+        //    {{event_time}}, {{event_location}}, {{guests}}, {{dietary}}, {{qrUrl}}
+        // 4. Copy your Service ID, Template ID, and Public Key below:
+        
+        const EMAILJS_SERVICE_ID = 'service_xxx';      // Replace with your Service ID
+        const EMAILJS_TEMPLATE_ID = 'template_xxx';    // Replace with your Template ID
+        const EMAILJS_PUBLIC_KEY = 'user_xxx';         // Replace with your Public Key
+        
+        // Apply EmailJS config to widget
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('lade-rsvp-widget-container');
+            if (EMAILJS_PUBLIC_KEY !== 'user_xxx') {
+                container.dataset.emailjsService = EMAILJS_SERVICE_ID;
+                container.dataset.emailjsTemplate = EMAILJS_TEMPLATE_ID;
+                container.dataset.emailjsKey = EMAILJS_PUBLIC_KEY;
+                console.log('📧 EmailJS configured for testing');
+            }
+        });
+
         // LocalStorage Viewer Functions
         function viewLocalStorage() {
             const viewer = document.getElementById('storage-viewer');
             const data = {};
-            
+
             for (let i = 0; i < localStorage.length; i++) {
                 const key = localStorage.key(i);
                 if (key.indexOf('lade_rsvp_') === 0) {
@@ -408,11 +433,11 @@
                     }
                 }
             }
-            
+
             viewer.textContent = JSON.stringify(data, null, 2);
             viewer.style.display = 'block';
         }
-        
+
         function clearAllData() {
             if (confirm('Are you sure? This will delete all RSVP data.')) {
                 for (let i = 0; i < localStorage.length; i++) {
@@ -426,6 +451,5 @@
             }
         }
     </script>
-    
 </body>
 </html>

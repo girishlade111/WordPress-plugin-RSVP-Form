@@ -2422,19 +2422,31 @@ if (!defined('ABSPATH')) {
         
         // ============================================
         // EMAILJS INTEGRATION
+        // Replace with your free EmailJS keys at https://www.emailjs.com/
         // ============================================
-        
+
         initEmailJS: function() {
             if (typeof emailjs !== 'undefined') {
+                // Initialize EmailJS with your public key
+                // Get your free keys: https://dashboard.emailjs.com/
                 emailjs.init(this.config.emailjsKey);
             }
         },
-        
+
         sendConfirmationEmail: function(rsvp) {
             if (!this.config.emailjsService || !this.config.emailjsTemplate) {
                 return;
             }
-            
+
+            // Generate QR code URL for email
+            const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + 
+                encodeURIComponent(JSON.stringify({
+                    id: rsvp.id,
+                    name: rsvp.name,
+                    event: this.config.eventName,
+                    status: rsvp.status
+                }));
+
             const templateParams = {
                 name: rsvp.name,
                 email: rsvp.email,
@@ -2444,16 +2456,63 @@ if (!defined('ABSPATH')) {
                 event_location: this.config.eventLocation,
                 guests: rsvp.guests,
                 dietary: rsvp.dietary.join(', '),
-                rsvp_id: rsvp.id
+                rsvp_id: rsvp.id,
+                qrUrl: qrUrl,
+                details: rsvp.guests + ' guest(s)' + (rsvp.dietary.length ? ' • ' + rsvp.dietary.join(', ') : '')
             };
-            
+
+            // Send confirmation email to attendee
             emailjs.send(this.config.emailjsService, this.config.emailjsTemplate, templateParams)
                 .then(() => {
-                    console.log('Email sent successfully');
+                    console.log('✅ Confirmation email sent to attendee');
+                    // Show success toast with shake animation
+                    const widget = this.elements.widget;
+                    widget.classList.add('lade-shake');
+                    setTimeout(() => {
+                        widget.classList.remove('lade-shake');
+                    }, 500);
+                    this.showToast('✅ Confirmation sent!', 'success');
                 })
                 .catch((error) => {
-                    console.warn('EmailJS error:', error);
+                    console.warn('❌ EmailJS error:', error);
+                    // Show error toast with retry option
+                    this.showRetryToast('Failed to send email', () => {
+                        this.sendConfirmationEmail(rsvp);
+                    });
                 });
+        },
+
+        // Show error toast with retry button
+        showRetryToast: function(message, retryCallback) {
+            const container = document.getElementById('ladeToastContainer_' + this.config.eventId);
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = 'lade-toast error';
+            toast.innerHTML = `
+                <span class="lade-toast-icon">❌</span>
+                <span class="lade-toast-message">${this.escapeHtml(message)}</span>
+                <button class="lade-toast-retry" style="background: var(--lade-danger); color: white; border: none; padding: 4px 10px; border-radius: 5px; cursor: pointer; font-size: 12px; margin-left: 8px;">Retry</button>
+                <button class="lade-toast-close" style="margin-left: 4px;">×</button>
+            `;
+
+            toast.querySelector('.lade-toast-retry').addEventListener('click', () => {
+                toast.remove();
+                retryCallback();
+            });
+
+            toast.querySelector('.lade-toast-close').addEventListener('click', () => {
+                toast.remove();
+            });
+
+            container.appendChild(toast);
+
+            // Auto-remove after 8 seconds
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.remove();
+                }
+            }, 8000);
         },
         
         // ============================================
