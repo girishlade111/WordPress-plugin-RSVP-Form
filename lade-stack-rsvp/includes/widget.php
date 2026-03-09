@@ -1610,12 +1610,12 @@ if (!defined('ABSPATH')) {
                 </div>
             `;
         },
-        
+
         buildCounter: function() {
             const remaining = this.getRemainingSpots();
             let badgeClass = 'lade-spots-badge';
             let statusText = `${remaining} spots remaining`;
-            
+
             if (remaining <= 0) {
                 badgeClass += ' full';
                 statusText = 'Event Full';
@@ -1624,7 +1624,7 @@ if (!defined('ABSPATH')) {
             } else if (remaining <= 10) {
                 badgeClass += ' low-spots';
             }
-            
+
             return `
                 <div class="lade-spots-container">
                     <div class="${badgeClass}" id="ladeSpotsCount_${this.config.eventId}">
@@ -1633,6 +1633,36 @@ if (!defined('ABSPATH')) {
                     </div>
                 </div>
             `;
+        },
+
+        // Trigger confetti animation for low spots
+        triggerConfetti: function() {
+            const remaining = this.getRemainingSpots();
+            
+            if (remaining <= 5 && remaining > 0 && typeof confetti !== 'undefined') {
+                // Low spots confetti
+                confetti({
+                    particleCount: 30,
+                    spread: 50,
+                    origin: { y: 0.7 },
+                    colors: ['#ed8936', '#f56565'],
+                    gravity: 0.8,
+                    drift: 0,
+                    scalar: 0.8
+                });
+            }
+            
+            if (remaining === 1 && typeof confetti !== 'undefined') {
+                // Last spot celebration
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#667eea', '#48bb78', '#ed8936'],
+                    gravity: 0.9,
+                    scalar: 1
+                });
+            }
         },
         
         buildRSVPForm: function() {
@@ -2340,33 +2370,35 @@ if (!defined('ABSPATH')) {
             // Simulate processing delay
             setTimeout(() => {
                 // Add to state
-                if (this.config.approvalMode) {
-                    this.state.rsvps.push(formData);
-                } else {
-                    this.state.rsvps.push(formData);
+                this.state.rsvps.push(formData);
+                
+                if (!this.config.approvalMode) {
                     this.state.approved.push(formData.id);
                 }
-                
+
                 this.saveState();
-                
+
+                // Trigger confetti for low spots
+                this.triggerConfetti();
+
                 // Send email if EmailJS configured
                 if (this.config.emailjsKey && formData.status === 'approved') {
                     this.sendConfirmationEmail(formData);
                 }
-                
+
                 // Show success message
                 this.showSuccessMessage(formData);
-                
+
                 submitBtn.classList.remove('loading');
                 submitBtn.textContent = 'Reserve My Spot';
             }, 1500);
         },
-        
+
         handleWaitlistSubmit: function() {
             const submitBtn = document.getElementById('ladeWaitlistSubmitBtn_' + this.config.eventId);
             submitBtn.classList.add('loading');
             submitBtn.textContent = 'Processing...';
-            
+
             const formData = {
                 id: 'waitlist_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
                 name: document.getElementById('ladeWaitlistName_' + this.config.eventId).value.trim(),
@@ -2374,7 +2406,7 @@ if (!defined('ABSPATH')) {
                 phone: document.getElementById('ladeWaitlistPhone_' + this.config.eventId)?.value.trim() || '',
                 timestamp: new Date().toISOString()
             };
-            
+
             setTimeout(() => {
                 this.state.waitlist.push(formData);
                 this.saveState();
@@ -2715,15 +2747,15 @@ if (!defined('ABSPATH')) {
         // ============================================
         // UTILITIES
         // ============================================
-        
+
         updateCounter: function() {
             const counter = this.elements.counter;
             if (!counter) return;
-            
+
             const remaining = this.getRemainingSpots();
             let badgeClass = 'lade-spots-badge';
             let statusText = `${remaining} spots remaining`;
-            
+
             if (remaining <= 0) {
                 badgeClass += ' full';
                 statusText = 'Event Full';
@@ -2732,9 +2764,19 @@ if (!defined('ABSPATH')) {
             } else if (remaining <= 10) {
                 badgeClass += ' low-spots';
             }
-            
+
+            // Remove animation class to re-trigger
+            counter.style.animation = 'none';
+            counter.offsetHeight; // Trigger reflow
+            counter.style.animation = null;
+
             counter.className = badgeClass;
             counter.querySelector('span:last-child').textContent = statusText;
+            
+            // Trigger confetti for low spots
+            if (remaining <= 5 && remaining > 0) {
+                this.triggerConfetti();
+            }
         },
         
         showToast: function(message, type = 'info') {

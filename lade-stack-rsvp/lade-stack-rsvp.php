@@ -61,15 +61,18 @@ final class Lade_Stack_RSVP {
         if (is_a($post, 'WP_Post') && has_shortcode($post->post_content, 'lade_rsvp_widget')) {
             // Interact.js for draggable
             wp_enqueue_script('interact-js', 'https://cdn.jsdelivr.net/npm/interactjs@1.10.23/dist/interact.min.js', array(), '1.10.23', true);
-            
+
             // EmailJS
             wp_enqueue_script('emailjs', 'https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js', array(), '3.12.1', true);
-            
+
             // QR Code.js
             wp_enqueue_script('qrcode-js', 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js', array(), '1.0.0', true);
-            
+
             // FileSaver.js for CSV export
             wp_enqueue_script('filesaver-js', 'https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js', array(), '2.0.5', true);
+            
+            // Canvas Confetti for celebrations
+            wp_enqueue_script('canvas-confetti', 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js', array(), '1.9.2', true);
         }
     }
     
