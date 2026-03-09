@@ -1935,7 +1935,14 @@ if (!defined('ABSPATH')) {
                 <div class="lade-admin-panel" id="ladeAdminPanel_${this.config.eventId}">
                     <div class="lade-admin-panel-header">
                         <h3>📊 RSVP Dashboard</h3>
-                        <button class="lade-admin-panel-close" id="ladeAdminClose_${this.config.eventId}">×</button>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            ${this.config.approvalMode ? `
+                            <span style="padding: 4px 10px; background: var(--lade-warning); color: white; border-radius: 12px; font-size: 11px; font-weight: 600;">
+                                🔒 Approval Mode
+                            </span>
+                            ` : ''}
+                            <button class="lade-admin-panel-close" id="ladeAdminClose_${this.config.eventId}">×</button>
+                        </div>
                     </div>
                     <div class="lade-admin-panel-body">
                         <div class="lade-stats-grid">
@@ -2955,22 +2962,76 @@ if (!defined('ABSPATH')) {
         updateStatus: function(id, status) {
             const rsvp = this.state.rsvps.find(r => r.id === id);
             if (!rsvp) return;
-            
+
             rsvp.status = status;
-            
+
             if (status === 'approved') {
                 if (!this.state.approved.includes(id)) {
                     this.state.approved.push(id);
                 }
-                // Send approval email
+                // Send approval email with QR code
                 this.sendConfirmationEmail(rsvp);
+                // Generate and auto-download QR code
+                this.generateAndDownloadQR(rsvp);
             } else if (status === 'rejected') {
                 this.state.approved = this.state.approved.filter(a => a !== id);
             }
-            
+
             this.saveState();
             this.renderAdminTable();
             this.showToast(`RSVP ${status}`, 'success');
+        },
+
+        // Generate QR code and auto-download on approval
+        generateAndDownloadQR: function(rsvp) {
+            if (typeof QRCode === 'undefined') {
+                console.warn('QRCode.js not loaded');
+                return;
+            }
+
+            // Create temporary container for QR generation
+            const tempContainer = document.createElement('div');
+            tempContainer.style.position = 'absolute';
+            tempContainer.style.left = '-9999px';
+            tempContainer.style.top = '-9999px';
+            document.body.appendChild(tempContainer);
+
+            const qrData = {
+                id: rsvp.id,
+                name: rsvp.name,
+                event: this.config.eventName,
+                status: rsvp.status
+            };
+
+            new QRCode(tempContainer, {
+                text: JSON.stringify(qrData),
+                width: 300,
+                height: 300,
+                colorDark: '#2d3748',
+                colorLight: '#e0e5ec',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            // Wait for QR to render then download
+            setTimeout(() => {
+                const canvas = tempContainer.querySelector('canvas');
+                if (canvas) {
+                    // Convert to blob and download
+                    canvas.toBlob((blob) => {
+                        if (blob) {
+                            const url = URL.createObjectURL(blob);
+                            const link = document.createElement('a');
+                            link.download = `RSVP-${rsvp.name.replace(/\s+/g, '_')}-${this.config.eventId}.png`;
+                            link.href = url;
+                            link.click();
+                            URL.revokeObjectURL(url);
+                            this.showToast('✅ QR Code downloaded!', 'success');
+                        }
+                    }, 'image/png');
+                }
+                // Clean up
+                document.body.removeChild(tempContainer);
+            }, 300);
         },
         
         // Export CSV - type: 'rsvp' or 'waitlist'
