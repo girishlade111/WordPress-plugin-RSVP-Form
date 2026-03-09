@@ -2009,10 +2009,10 @@ if (!defined('ABSPATH')) {
             this.saveState();
         },
 
-        // Save state to localStorage
+        // Save state to localStorage with error handling
         saveState: function() {
             const storageKey = 'lade_rsvp_' + this.config.eventId;
-            
+
             // Ensure settings are saved
             if (!this.state.settings) {
                 this.state.settings = {
@@ -2020,11 +2020,58 @@ if (!defined('ABSPATH')) {
                     capacity: this.config.maxCapacity
                 };
             }
-            
-            localStorage.setItem(storageKey, JSON.stringify(this.state));
+
+            try {
+                localStorage.setItem(storageKey, JSON.stringify(this.state));
+            } catch (error) {
+                // Handle localStorage quota exceeded (5MB limit)
+                if (error.name === 'QuotaExceededError') {
+                    console.warn('⚠️ Lade RSVP: LocalStorage quota exceeded. Clearing old data...');
+                    // Clear oldest entry to make room
+                    this.clearOldestStorage();
+                    // Try saving again
+                    try {
+                        localStorage.setItem(storageKey, JSON.stringify(this.state));
+                    } catch (retryError) {
+                        console.error('🚨 Lade RSVP: Could not save to localStorage:', retryError);
+                        this.showToast('Storage full. Some data may not be saved.', 'warning');
+                    }
+                } else {
+                    console.error('🚨 Lade RSVP: localStorage error:', error);
+                }
+            }
 
             // Update counter display
             this.updateCounter();
+        },
+
+        // Clear oldest storage entry to make room
+        clearOldestStorage: function() {
+            const now = Date.now();
+            let oldestKey = null;
+            let oldestTime = now;
+
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('lade_rsvp_') && !key.includes('deadline') && !key.includes('widget_state')) {
+                    try {
+                        const data = JSON.parse(localStorage.getItem(key));
+                        const timestamp = data.settings?.lastUpdate || now;
+                        if (timestamp < oldestTime) {
+                            oldestTime = timestamp;
+                            oldestKey = key;
+                        }
+                    } catch (e) {
+                        // Invalid data, safe to remove
+                        oldestKey = key;
+                    }
+                }
+            }
+
+            if (oldestKey) {
+                localStorage.removeItem(oldestKey);
+                console.log('✅ Cleared old storage:', oldestKey);
+            }
         },
         
         // Get remaining spots
@@ -3526,7 +3573,7 @@ if (!defined('ABSPATH')) {
             }
 
             if (filteredRSVPs.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">${this.state.rsvps.length === 0 ? 'No RSVPs yet' : 'No matching RSVPs'}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">${this.state.rsvps.length === 0 ? this.t('noRsvps') : this.t('noMatchingRsvps')}</td></tr>`;
                 return;
             }
 
@@ -3592,7 +3639,7 @@ if (!defined('ABSPATH')) {
                 status: rsvp.status
             };
 
-            nameEl.textContent = `${rsvp.name} • ${this.config.eventName}`;
+            nameEl.textContent = `${this.escapeHtml(rsvp.name)} • ${this.escapeHtml(this.config.eventName)}`;
             qrContent.innerHTML = '';
 
             if (typeof QRCode !== 'undefined') {
@@ -3839,7 +3886,7 @@ if (!defined('ABSPATH')) {
                     countdownText = `${minutes}m`;
                 }
 
-                textEl.textContent = `RSVP closes in ${countdownText}`;
+                textEl.textContent = `${this.t('rsvpClosesIn')} ${countdownText}`;
 
                 // Add urgent class if less than 24 hours
                 if (diff < 24 * 60 * 60 * 1000) {
