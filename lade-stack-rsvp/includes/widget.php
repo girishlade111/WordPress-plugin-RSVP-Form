@@ -1453,7 +1453,7 @@ if (!defined('ABSPATH')) {
                 fields: (container.dataset.fields || 'name,email,phone,guests,dietary').split(',').map(f => f.trim()),
                 deadline: container.dataset.deadline || '',
                 approvalMode: container.dataset.approvalMode === 'true',
-                adminPassword: container.dataset.adminPassword || 'admin',
+                adminPassword: container.dataset.adminPassword || 'ladestack123',
                 emailjsService: container.dataset.emailjsService || '',
                 emailjsTemplate: container.dataset.emailjsTemplate || '',
                 emailjsKey: container.dataset.emailjsKey || '',
@@ -1928,10 +1928,10 @@ if (!defined('ABSPATH')) {
         
         buildAdminPanel: function() {
             return `
-                <button class="lade-admin-tab" id="ladeAdminTab_${this.config.eventId}" title="Admin Dashboard">
-                    ⚙️
+                <button class="lade-admin-tab" id="ladeAdminTab_${this.config.eventId}" title="View RSVPs">
+                    <span style="font-size: 11px; font-weight: 600;">View RSVPs</span>
                 </button>
-                
+
                 <div class="lade-admin-panel" id="ladeAdminPanel_${this.config.eventId}">
                     <div class="lade-admin-panel-header">
                         <h3>📊 RSVP Dashboard</h3>
@@ -1956,29 +1956,60 @@ if (!defined('ABSPATH')) {
                                 <span class="lade-stat-label">Waitlist</span>
                             </div>
                         </div>
-                        
+
                         <div class="lade-admin-actions">
                             ${this.config.approvalMode ? `
                             <button class="lade-admin-action-btn success" id="ladeApproveAll_${this.config.eventId}">✓ Approve All</button>
                             ` : ''}
-                            <button class="lade-admin-action-btn secondary" id="ladeExportCSV_${this.config.eventId}">📥 Export CSV</button>
+                            <button class="lade-admin-action-btn secondary" id="ladeExportRSVPCSV_${this.config.eventId}">📥 Export RSVPs</button>
+                            <button class="lade-admin-action-btn secondary" id="ladeExportWaitlistCSV_${this.config.eventId}">📥 Export Waitlist</button>
                             <button class="lade-admin-action-btn danger" id="ladeClearAll_${this.config.eventId}">🗑️ Clear All</button>
                         </div>
-                        
+
+                        <div style="display: flex; gap: 10px; margin: 16px 0; align-items: center;">
+                            <input type="text" id="ladeSearchInput_${this.config.eventId}" placeholder="🔍 Search by name or email..." 
+                                style="flex: 1; padding: 10px 14px; border: none; border-radius: 10px; background: var(--lade-bg-primary); 
+                                box-shadow: inset 3px 3px 6px var(--lade-shadow-dark), inset -3px -3px 6px var(--lade-shadow-light);
+                                font-size: 13px; color: var(--lade-text-primary); outline: none;">
+                            <select id="ladeStatusFilter_${this.config.eventId}" 
+                                style="padding: 10px 14px; border: none; border-radius: 10px; background: var(--lade-bg-primary);
+                                box-shadow: 3px 3px 6px var(--lade-shadow-dark), -3px -3px 6px var(--lade-shadow-light);
+                                font-size: 13px; color: var(--lade-text-primary); outline: none; cursor: pointer;">
+                                <option value="all">All Status</option>
+                                <option value="approved">Approved</option>
+                                <option value="pending">Pending</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                        </div>
+
                         <table class="lade-rsvp-table">
                             <thead>
                                 <tr>
                                     <th>Name</th>
                                     <th>Email</th>
                                     <th>Guests</th>
+                                    <th>Date</th>
                                     <th>Status</th>
-                                    ${this.config.approvalMode ? '<th>Actions</th>' : ''}
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="ladeRSVPTableBody_${this.config.eventId}">
-                                <tr><td colspan="${this.config.approvalMode ? '5' : '4'}" style="text-align:center;">No RSVPs yet</td></tr>
+                                <tr><td colspan="6" style="text-align:center;">No RSVPs yet</td></tr>
                             </tbody>
                         </table>
+                    </div>
+                </div>
+
+                <!-- QR Code Modal -->
+                <div class="lade-password-modal" id="ladeQRModal_${this.config.eventId}">
+                    <div class="lade-password-box" style="text-align: center;">
+                        <h4>🎫 RSVP QR Code</h4>
+                        <div id="ladeQRModalContent_${this.config.eventId}" style="margin: 20px 0;"></div>
+                        <p id="ladeQRModalName_${this.config.eventId}" style="font-size: 14px; color: var(--lade-text-secondary); margin-bottom: 16px;"></p>
+                        <button class="lade-password-btn" id="ladeQRDownloadBtn_${this.config.eventId}">📥 Download QR</button>
+                        <button class="lade-admin-panel-close" id="ladeQRModalClose_${this.config.eventId}" 
+                            style="position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; border-radius: 50%; border: none; 
+                            background: var(--lade-bg-primary); cursor: pointer; font-size: 18px;">×</button>
                     </div>
                 </div>
             `;
@@ -2698,14 +2729,22 @@ if (!defined('ABSPATH')) {
                 });
             }
             
-            // Export CSV
-            const exportBtn = document.getElementById('ladeExportCSV_' + this.config.eventId);
-            if (exportBtn) {
-                exportBtn.addEventListener('click', () => {
-                    this.exportCSV();
+            // Export RSVPs CSV
+            const exportRSVPBtn = document.getElementById('ladeExportRSVPCSV_' + this.config.eventId);
+            if (exportRSVPBtn) {
+                exportRSVPBtn.addEventListener('click', () => {
+                    this.exportCSV('rsvp');
                 });
             }
-            
+
+            // Export Waitlist CSV
+            const exportWaitlistBtn = document.getElementById('ladeExportWaitlistCSV_' + this.config.eventId);
+            if (exportWaitlistBtn) {
+                exportWaitlistBtn.addEventListener('click', () => {
+                    this.exportCSV('waitlist');
+                });
+            }
+
             // Clear all
             const clearBtn = document.getElementById('ladeClearAll_' + this.config.eventId);
             if (clearBtn) {
@@ -2718,6 +2757,20 @@ if (!defined('ABSPATH')) {
                         this.saveState();
                         this.renderAdminTable();
                         this.showToast('✅ All data cleared', 'success');
+                    }
+                });
+            }
+
+            // QR Modal close
+            const qrModalClose = document.getElementById('ladeQRModalClose_' + this.config.eventId);
+            const qrModal = document.getElementById('ladeQRModal_' + this.config.eventId);
+            if (qrModalClose && qrModal) {
+                qrModalClose.addEventListener('click', () => {
+                    qrModal.classList.remove('active');
+                });
+                qrModal.addEventListener('click', (e) => {
+                    if (e.target === qrModal) {
+                        qrModal.classList.remove('active');
                     }
                 });
             }
@@ -2742,34 +2795,161 @@ if (!defined('ABSPATH')) {
         renderAdminTable: function() {
             const tbody = document.getElementById('ladeRSVPTableBody_' + this.config.eventId);
             if (!tbody) return;
-            
+
             // Update stats
             document.getElementById('ladeStatTotal_' + this.config.eventId).textContent = this.state.rsvps.length;
             document.getElementById('ladeStatApproved_' + this.config.eventId).textContent = this.state.approved.length;
             document.getElementById('ladeStatPending_' + this.config.eventId).textContent = this.state.rsvps.filter(r => r.status === 'pending').length;
             document.getElementById('ladeStatWaitlist_' + this.config.eventId).textContent = this.state.waitlist.length;
+
+            // Get search and filter values
+            const searchInput = document.getElementById('ladeSearchInput_' + this.config.eventId);
+            const statusFilter = document.getElementById('ladeStatusFilter_' + this.config.eventId);
+            const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+            const selectedStatus = statusFilter ? statusFilter.value : 'all';
+
+            // Filter RSVPs
+            let filteredRSVPs = this.state.rsvps;
             
-            if (this.state.rsvps.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="${this.config.approvalMode ? '5' : '4'}" style="text-align:center;">No RSVPs yet</td></tr>`;
-                return;
+            if (searchTerm) {
+                filteredRSVPs = filteredRSVPs.filter(rsvp => 
+                    rsvp.name.toLowerCase().includes(searchTerm) || 
+                    rsvp.email.toLowerCase().includes(searchTerm)
+                );
             }
             
-            tbody.innerHTML = this.state.rsvps.map(rsvp => `
+            if (selectedStatus !== 'all') {
+                filteredRSVPs = filteredRSVPs.filter(rsvp => rsvp.status === selectedStatus);
+            }
+
+            if (filteredRSVPs.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">${this.state.rsvps.length === 0 ? 'No RSVPs yet' : 'No matching RSVPs'}</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filteredRSVPs.map(rsvp => {
+                const dateObj = new Date(rsvp.timestamp);
+                const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + 
+                               ' ' + dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                
+                return `
                 <tr>
                     <td>${this.escapeHtml(rsvp.name)}</td>
                     <td>${this.escapeHtml(rsvp.email)}</td>
                     <td>${rsvp.guests || '-'}</td>
+                    <td style="font-size: 12px; color: var(--lade-text-muted);">${dateStr}</td>
                     <td><span class="lade-status-badge ${rsvp.status}">${rsvp.status}</span></td>
-                    ${this.config.approvalMode ? `
                     <td>
-                        ${rsvp.status === 'pending' ? `
-                        <button class="lade-admin-action-btn success" onclick="LadeRSVP.updateStatus('${rsvp.id}', 'approved')" style="padding: 4px 8px; font-size: 11px;">✓</button>
-                        <button class="lade-admin-action-btn danger" onclick="LadeRSVP.updateStatus('${rsvp.id}', 'rejected')" style="padding: 4px 8px; font-size: 11px;">×</button>
-                        ` : '-'}
+                        <div style="display: flex; gap: 6px;">
+                            <button class="lade-admin-action-btn secondary" 
+                                onclick="LadeRSVP.showQRCode('${this.escapeHtml(rsvp.id)}')" 
+                                style="padding: 4px 8px; font-size: 11px;" title="View QR Code">🎫</button>
+                            ${rsvp.status === 'pending' ? `
+                            <button class="lade-admin-action-btn success" 
+                                onclick="LadeRSVP.updateStatus('${rsvp.id}', 'approved')" 
+                                style="padding: 4px 8px; font-size: 11px;" title="Approve">✓</button>
+                            <button class="lade-admin-action-btn danger" 
+                                onclick="LadeRSVP.updateStatus('${rsvp.id}', 'rejected')" 
+                                style="padding: 4px 8px; font-size: 11px;" title="Reject">×</button>
+                            ` : `
+                            <button class="lade-admin-action-btn secondary" 
+                                onclick="LadeRSVP.duplicateRSVP('${rsvp.id}')" 
+                                style="padding: 4px 8px; font-size: 11px;" title="Duplicate">📋</button>
+                            `}
+                        </div>
                     </td>
-                    ` : ''}
                 </tr>
-            `).join('');
+            `}).join('');
+
+            // Add search and filter listeners
+            if (searchInput) {
+                searchInput.addEventListener('input', () => this.renderAdminTable());
+            }
+            if (statusFilter) {
+                statusFilter.addEventListener('change', () => this.renderAdminTable());
+            }
+        },
+
+        // Show QR code modal
+        showQRCode: function(id) {
+            const rsvp = this.state.rsvps.find(r => r.id === id);
+            if (!rsvp) return;
+
+            const modal = document.getElementById('ladeQRModal_' + this.config.eventId);
+            const qrContent = document.getElementById('ladeQRModalContent_' + this.config.eventId);
+            const nameEl = document.getElementById('ladeQRModalName_' + this.config.eventId);
+
+            if (!modal || !qrContent || !nameEl) return;
+
+            // Generate QR code data
+            const qrData = {
+                id: rsvp.id,
+                name: rsvp.name,
+                event: this.config.eventName,
+                status: rsvp.status
+            };
+
+            nameEl.textContent = `${rsvp.name} • ${this.config.eventName}`;
+            qrContent.innerHTML = '';
+
+            if (typeof QRCode !== 'undefined') {
+                new QRCode(qrContent, {
+                    text: JSON.stringify(qrData),
+                    width: 180,
+                    height: 180,
+                    colorDark: '#2d3748',
+                    colorLight: '#e0e5ec',
+                    correctLevel: QRCode.CorrectLevel.M
+                });
+            }
+
+            // Store current QR data for download
+            this.currentQRData = qrData;
+            this.currentQRName = rsvp.name;
+
+            // Add download handler
+            const downloadBtn = document.getElementById('ladeQRDownloadBtn_' + this.config.eventId);
+            if (downloadBtn) {
+                downloadBtn.onclick = () => this.downloadCurrentQR();
+            }
+
+            const closeBtn = document.getElementById('ladeQRModalClose_' + this.config.eventId);
+            if (closeBtn) {
+                closeBtn.onclick = () => modal.classList.remove('active');
+            }
+
+            modal.classList.add('active');
+        },
+
+        // Download current QR code
+        downloadCurrentQR: function() {
+            const canvas = document.querySelector('#ladeQRModalContent_' + this.config.eventId + ' canvas');
+            if (!canvas) return;
+
+            const link = document.createElement('a');
+            link.download = `RSVP-${this.currentQRName || 'guest'}-${this.config.eventId}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+
+            this.showToast('✅ QR Code downloaded!', 'success');
+        },
+
+        // Duplicate RSVP (for no-shows or +1)
+        duplicateRSVP: function(id) {
+            const rsvp = this.state.rsvps.find(r => r.id === id);
+            if (!rsvp) return;
+
+            const newRSVP = {
+                ...rsvp,
+                id: 'rsvp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                timestamp: new Date().toISOString(),
+                name: rsvp.name + ' (Duplicate)'
+            };
+
+            this.state.rsvps.push(newRSVP);
+            this.saveState();
+            this.renderAdminTable();
+            this.showToast('✅ RSVP duplicated!', 'success');
         },
         
         updateStatus: function(id, status) {
@@ -2793,35 +2973,69 @@ if (!defined('ABSPATH')) {
             this.showToast(`RSVP ${status}`, 'success');
         },
         
-        exportCSV: function() {
-            if (this.state.rsvps.length === 0) {
-                this.showToast('No data to export', 'warning');
-                return;
+        // Export CSV - type: 'rsvp' or 'waitlist'
+        exportCSV: function(type = 'rsvp') {
+            let data = [];
+            let filename = '';
+            let headers = [];
+
+            if (type === 'waitlist') {
+                // Export waitlist
+                if (this.state.waitlist.length === 0) {
+                    this.showToast('Waitlist is empty', 'warning');
+                    return;
+                }
+
+                headers = ['ID', 'Name', 'Email', 'Phone', 'Timestamp'];
+                data = this.state.waitlist.map(item => [
+                    item.id,
+                    item.name,
+                    item.email,
+                    item.phone || '',
+                    item.timestamp
+                ]);
+                filename = `Waitlist-${this.config.eventId}-${new Date().toISOString().split('T')[0]}.csv`;
+            } else {
+                // Export RSVPs
+                if (this.state.rsvps.length === 0) {
+                    this.showToast('No RSVPs to export', 'warning');
+                    return;
+                }
+
+                headers = ['ID', 'Name', 'Email', 'Phone', 'Guests', 'Dietary', 'Status', 'Timestamp'];
+                data = this.state.rsvps.map(rsvp => [
+                    rsvp.id,
+                    rsvp.name,
+                    rsvp.email,
+                    rsvp.phone || '',
+                    rsvp.guests || '',
+                    (rsvp.dietary || []).join('; '),
+                    rsvp.status,
+                    rsvp.timestamp
+                ]);
+                filename = `RSVPs-${this.config.eventId}-${new Date().toISOString().split('T')[0]}.csv`;
             }
-            
-            const headers = ['ID', 'Name', 'Email', 'Phone', 'Guests', 'Dietary', 'Status', 'Timestamp'];
-            const rows = this.state.rsvps.map(rsvp => [
-                rsvp.id,
-                rsvp.name,
-                rsvp.email,
-                rsvp.phone || '',
-                rsvp.guests || '',
-                (rsvp.dietary || []).join('; '),
-                rsvp.status,
-                rsvp.timestamp
-            ]);
-            
-            const csv = [headers, ...rows].map(row => 
-                row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')
+
+            // Build CSV with proper escaping
+            const csv = [headers, ...data].map(row =>
+                row.map(cell => {
+                    const str = String(cell);
+                    // Escape quotes and wrap in quotes if contains comma
+                    if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+                        return `"${str.replace(/"/g, '""')}"`;
+                    }
+                    return str;
+                }).join(',')
             ).join('\n');
-            
+
+            // Create and download blob
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `RSVP-${this.config.eventId}-${new Date().toISOString().split('T')[0]}.csv`;
+            link.download = filename;
             link.click();
-            
-            this.showToast('✅ CSV exported!', 'success');
+
+            this.showToast(`✅ ${type === 'waitlist' ? 'Waitlist' : 'RSVPs'} exported!`, 'success');
         },
         
         // ============================================
