@@ -474,4 +474,4 @@ GPL v2 or later - [https://www.gnu.org/licenses/gpl-2.0.html](https://www.gnu.or
 
 ---
 
-**Made with ❤️ by Lade Stack** | [ladestack.in](https://ladestack.in)
+**Built by [Girish Lade](https://github.com/girishlade111)** — made with ❤️ by [ladestack.in](https://ladestack.in)
